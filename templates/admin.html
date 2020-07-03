@@ -1,34 +1,26 @@
-
-<!-- saved from url=(0092)https://www.pythonanywhere.com/user/nielbrad/files/home/nielbrad/mysite/templates/admin.html -->
-<html><script type="text/javascript">(function(){var t=[],e=!0;window.addEventListener("onelogin.markSubmitCandidates",(function(n){t.forEach((function(t){t.setAttribute&&t.setAttribute("data-ol-has-click-handler","")})),t=[],e=!1,window.dispatchEvent(new CustomEvent("onelogin.submitCandidatesMarked"))}),{once:!0}),EventTarget.prototype.ol_originalAddEventListener=EventTarget.prototype.addEventListener,EventTarget.prototype.addEventListener=function(n,o){var r=arguments.length>2&&void 0!==arguments[2]&&arguments[2];this.ol_originalAddEventListener(n,o,r),e&&"click"===n&&t.push(this)}})("")</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>{% extends "layout.html" %}
+{% extends "layout.html" %}
 {% block content %}
 <h1>Administration</h1>
-
 <!-- The data that is sent back from the server is a List of Python Dictionaries -->
-<form method="POST" action="https://www.pythonanywhere.com/admin">
-
-{% for key in data[0].keys() %}
-    
-{% endfor %}
-    
-{% for row in data %}
-  {% for column in row %}{%endfor%}
-  
-{% endfor %}
+<form method="POST" action="/admin">
 <table class="table">
-<tbody><tr>
-    <!-- Get all the keys of the first python dictionary as column headings --><th>{{key}}</th><th>delete</th>
+<tr>
+    <!-- Get all the keys of the first python dictionary as column headings -->
+{% for key in data[0].keys() %}
+    <th>{{key}}</th>
+{% endfor %}
+    <th>delete</th>
 </tr>
-    <!-- Print out each python dictionary into a html table row --><tr><td>{{column}}</td><td><input type="checkbox" name="delete" value="{{row[&#39;userid&#39;]}}"></td> <!-- Add checkbox for the userid -->
-  </tr></tbody></table>
-<input type="submit" value="Delete">
-</form>
-
-{% for message in get_flashed_messages() %}
-<div class="flash">
-    {{message}}
-</div>
+    <!-- Print out each python dictionary into a html table row -->
+{% for row in data %}
+  <tr>
+    {% for column in row %}
+      <td>{{column}}</td>
+    {% endfor %}
+    <td><input type="checkbox" name="delete" value="{{row['userid']}}"></td> <!-- Add checkbox for the userid -->
+  </tr>
 {%endfor%}
-
-
-{% endblock %}</body></html>
+</table>
+<input type=submit value=Delete>
+</form>
+{% endblock %}

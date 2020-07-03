@@ -1,9 +1,7 @@
-
-<!-- saved from url=(0092)https://www.pythonanywhere.com/user/nielbrad/files/home/nielbrad/mysite/templates/login.html -->
-<html><script type="text/javascript">(function(){var t=[],e=!0;window.addEventListener("onelogin.markSubmitCandidates",(function(n){t.forEach((function(t){t.setAttribute&&t.setAttribute("data-ol-has-click-handler","")})),t=[],e=!1,window.dispatchEvent(new CustomEvent("onelogin.submitCandidatesMarked"))}),{once:!0}),EventTarget.prototype.ol_originalAddEventListener=EventTarget.prototype.addEventListener,EventTarget.prototype.addEventListener=function(n,o){var r=arguments.length>2&&void 0!==arguments[2]&&arguments[2];this.ol_originalAddEventListener(n,o,r),e&&"click"===n&&t.push(this)}})("")</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>{% extends "layout.html" %}
+{% extends "layout.html" %}
 {% block content %}
     <h3>Login</h3>
-    <form action="https://www.pythonanywhere.com/" method="POST">
+    <form action="/" method="POST">
       Email:<br>
       <input type="text" name="email" value=""><br>
       Password:<br>
@@ -16,4 +14,3 @@
 {% endblock %}
 {% block scripts %}
 {% endblock %}
-</body></html>
