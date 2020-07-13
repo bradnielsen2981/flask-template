@@ -31,14 +31,14 @@ def update_access(userid):
     database.ModifyQueryHelper("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
     return
 
-#gets active users from database using lastaccess field
-def get_active_users():
+#gets active users from database using lastaccess field - duration is by default 120 seconds
+def get_active_users(duration=120):
     fmt = "%d/%m/%Y %H:%M:%S"
     users = database.ViewQueryHelper("SELECT username, lastaccess from users")
     activeusers = [] #blank list
     for user in users:
         td = datetime.now() - datetime.strptime(user['lastaccess'],fmt)
-        if td.seconds < 120:
+        if td.seconds < duration:
             activeusers.append(user['name']) #makes a list of names
     return activeusers #list of users as JSON
 
@@ -66,6 +66,7 @@ def index():
         flash("No data submitted")
     return render_template('login.html')
 
+
 #homepage is shown once user is logged in
 @app.route('/home', methods=['GET','POST'])
 def home():
@@ -74,6 +75,7 @@ def home():
     data=None
     flash("Login successful")
     return render_template('home.html', data=data)
+
 
 #admin page only available to admin, redirects for anyone else
 @app.route('/admin', methods=['GET','POST'])
