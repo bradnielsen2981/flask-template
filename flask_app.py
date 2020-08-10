@@ -51,17 +51,6 @@ def index():
     if request.method == "POST":  #if form data has been sent
         email = request.form['email']   #get the form field with the name
         password = request.form['password']
-        userdetails = database.ViewQueryHelper("SELECT * FROM users WHERE email=? AND password=?",(email,password))
-        if userdetails: #list that contains data evaluated to True
-            row = userdetails[0] #userdetails is a list of dictionaries, get the first list
-            update_access(row['userid'])
-            session['userid'] = row['userid']
-            session['username'] = row['username']
-            session['permission'] = row['permission']
-            return redirect('./home')
-        else: #an empty list evaluates to False
-            log("Incorrect login.")
-            flash("Sorry no user found, password or username incorrect")
     else:
         flash("No data submitted")
     return render_template('login.html')
@@ -84,12 +73,6 @@ def admin():
             return redirect('./')
     else:
         return redirect('/') #user has not logged in
-    if request.method == "POST":
-        userids = request.form.getlist('delete') #gets checkboxes, each checkbox contains the user id value
-        for userid in userids:
-            if int(userid) > 1: #make sure you can not delete the admin user
-                database.ModifyQueryHelper("DELETE FROM users WHERE userid = ?",(userid,)) #note the use of comma after userid. A query must accept a list (tuple) of params, not just one param)
-    userdetails = database.ViewQueryHelper("SELECT * FROM users")
     return render_template('admin.html', data=userdetails)
 
 #register a new user - activity for students - create a register page
