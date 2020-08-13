@@ -8,8 +8,7 @@ from interfaces.databaseinterface import DatabaseHelper
 #-----------------------------------------------------------------------------------
 DEBUG = True #sets the level of logging to high
 SECRET_KEY = 'my random key can be anything' #this random sequence is required to encrypt Sessions
-app = Flask(__name__) #Creates a handle for the Flask Web Serverasd
-
+app = Flask(__name__) #Creates a handle for the Flask Web Server
 app.config.from_object(__name__) #Set app configuration using above SETTINGS
 #database = DatabaseHelper('/home/nielbrad/mysite/test.sqlite') #on Python Anywhere
 database = DatabaseHelper('test.sqlite')
@@ -78,7 +77,7 @@ def home():
 #admin page only available to admin, redirects for anyone else
 @app.route('/admin', methods=['GET','POST'])
 def admin():
-    data = None
+    userdetails = database.ViewQueryHelper('SELECT * FROM users')
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')
