@@ -39,7 +39,7 @@ class DatabaseHelper():
             self.logger.error("DATABASE ERROR: %s" % e)
             self.logger.error(query) 
         connection.close()
-        return result #should be a list of dictionaries on success, else equals None
+        return ([dict(row) for row in result]) #change to a list of dictionaries
 
     # Created a helper function so to save time and also log results
     # Write your DELETE, INSERT, UPDATE Query, and pass in a Tuple(a,b,c etc ) representing any parameters
@@ -51,9 +51,11 @@ class DatabaseHelper():
                 connection.execute(query, params)
             else:
                 connection.execute(query)
+            result = True
         except (sqlite3.OperationalError, sqlite3.Warning, sqlite3.Error) as e:
             self.logger.error("DATABASE ERROR: %s" % e)
-            self.logger.error(query) 
+            self.logger.error(query)
+            result = False
         connection.commit()
         connection.close()
         return result #Should be a true or false depending on success??
