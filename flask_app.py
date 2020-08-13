@@ -8,7 +8,8 @@ from interfaces.databaseinterface import DatabaseHelper
 #-----------------------------------------------------------------------------------
 DEBUG = True #sets the level of logging to high
 SECRET_KEY = 'my random key can be anything' #this random sequence is required to encrypt Sessions
-app = Flask(__name__) #Creates a handle for the Flask Web Server
+app = Flask(__name__) #Creates a handle for the Flask Web Serverasd
+
 app.config.from_object(__name__) #Set app configuration using above SETTINGS
 #database = DatabaseHelper('/home/nielbrad/mysite/test.sqlite') #on Python Anywhere
 database = DatabaseHelper('test.sqlite')
