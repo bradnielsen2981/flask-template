@@ -46,12 +46,22 @@ def get_active_users():
 #HTTP REQUEST HANDLERS------------------------------------------------------
 #Login page
 @app.route('/', methods=['GET','POST'])
-def index():
+def login():
     if 'userid' in session:
         return redirect('./home') #no form data is carried across using 'dot/'
     if request.method == "POST":  #if form data has been sent
-        email = request.form['email']   #get the form field with the name
+        email = request.form['email']   #get the form field with the name 
         password = request.form['password']
+        # TODO - need to make sure only one user is able to login at a time...
+        userdetails = database.ViewQueryHelper("SELECT * FROM users WHERE email=? AND password=?",(email,password))
+        if userdetails:
+            row = userdetails[0] #userdetails is a list of dictionaries
+            session['userid'] = row['userid']
+            session['username'] = row['username']
+            session['permission'] = row['permission']
+            return redirect('./home')
+        else:
+            flash("Sorry no user found, password or username incorrect")
     else:
         flash("No data submitted")
     return render_template('login.html')
@@ -112,7 +122,7 @@ def defaultdatahandler():
 def getallusers():
     results = database.ViewQueryHelper("SELECT username, lastaccess from users")
     if results:
-        return jsonify([dict(row) for row in results]) #jsonify doesnt work with an SQLite.Row so must convert to list
+        return jsonify(results) #jsonify doesnt work with an SQLite.Row so must convert to list
     else:
         return jsonify({"message":"No users found"}) #jsonigy converts a python dictionary to string encoding
 #-------------------------------------------------------------------------------------------
