@@ -22,19 +22,19 @@ def login():
     if 'userid' in session:
         return redirect('./home') #no form data is carried across using 'dot/'
     if request.method == "POST":  #if form data has been sent
-        email = request.form['email']   #get the form field with the name 
-        password = request.form['password']
-        # TODO - need to make sure only one user is able to login at a time...
-        userdetails = database.ViewQueryHelper("SELECT * FROM users WHERE email=? AND password=?",(email,password))
-        if userdetails:
-            row = userdetails[0] #userdetails is a list of dictionaries
-            update_access(row['userid']) #calls my custom helper function
-            session['userid'] = row['userid']
-            session['username'] = row['username']
-            session['permission'] = row['permission']
-            return redirect('./home')
-        else:
-            flash("Sorry no user found, password or username incorrect")
+        pass
+    #    email = request.form['email']   #get the form field with the name 
+    #    password = request.form['password']
+    #    userdetails = database.ViewQueryHelper("SELECT * FROM users WHERE email=? AND password=?",(email,password))
+    #    if userdetails:
+    #        row = userdetails[0] #userdetails is a list of dictionaries
+    #        update_access(row['userid']) #calls my custom helper function
+    #        session['userid'] = row['userid']
+    #        session['username'] = row['username']
+    #        session['permission'] = row['permission']
+    #        return redirect('./home')
+    #    else:
+    #        flash("Sorry no user found, password or username incorrect")
     return render_template('login.html')
 
 #homepage is shown once user is logged in
@@ -48,17 +48,17 @@ def home():
 #admin page only available to admin, redirects for anyone else
 @app.route('/admin', methods=['GET','POST'])
 def admin():
-    userdetails = database.ViewQueryHelper('SELECT * FROM users')
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')
     else:
         return redirect('/') #user has not logged in
-    if request.method == 'POST':
-        userids = request.form.getlist('delete')
-        for userid in userids:
-            if int(userid) > 1:
-                database.ModifyQueryHelper('DELETE FROM users WHERE userid = ?',(int(userid),))
+    #userdetails = database.ViewQueryHelper('SELECT * FROM users')
+    #if request.method == 'POST':
+    #    userids = request.form.getlist('delete')
+    #    for userid in userids:
+    #        if int(userid) > 1:
+    #            database.ModifyQueryHelper('DELETE FROM users WHERE userid = ?',(int(userid),))
     return render_template('admin.html', data=userdetails)
 
 #register a new user - activity for students - create a register page
@@ -76,7 +76,6 @@ def register():
 def logoff():
     session.clear()
     return redirect('./')
-
 
 
 
