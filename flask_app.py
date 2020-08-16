@@ -1,6 +1,6 @@
 from flask import Flask, render_template, session, request, redirect, url_for, flash, jsonify
 #from flask_cors import CORS
-import sqlite3, uuid, hashlib, sys, logging, math #other libraries
+import sqlite3, uuid, hashlib, sys, logging, math, time #other libraries
 from datetime import datetime
 from interfaces.databaseinterface import DatabaseHelper
 
@@ -15,6 +15,7 @@ app.config.from_object(__name__) #Set app configuration using above SETTINGS
 database = DatabaseHelper('test.sqlite')
 database.set_log(app.logger) #set the logger inside the database
 
+
 #---HTTP REQUEST HANDLERS------------------------------------------------------
 #Login page
 @app.route('/', methods=['GET','POST'])
@@ -22,19 +23,18 @@ def login():
     if 'userid' in session:
         return redirect('./home') #no form data is carried across using 'dot/'
     if request.method == "POST":  #if form data has been sent
-        pass
-    #    email = request.form['email']   #get the form field with the name 
-    #    password = request.form['password']
-    #    userdetails = database.ViewQueryHelper("SELECT * FROM users WHERE email=? AND password=?",(email,password))
-    #    if userdetails:
-    #        row = userdetails[0] #userdetails is a list of dictionaries
-    #        update_access(row['userid']) #calls my custom helper function
-    #        session['userid'] = row['userid']
-    #        session['username'] = row['username']
-    #        session['permission'] = row['permission']
-    #        return redirect('./home')
-    #    else:
-    #        flash("Sorry no user found, password or username incorrect")
+        email = request.form['email']   #get the form field with the name 
+        password = request.form['password']
+        userdetails = database.ViewQueryHelper("SELECT * FROM users WHERE email=? AND password=?",(email,password))
+        if userdetails:
+            row = userdetails[0] #userdetails is a list of dictionaries
+            update_access(row['userid']) #calls my custom helper function
+            session['userid'] = row['userid']
+            session['username'] = row['username']
+            session['permission'] = row['permission']
+            return redirect('./home')
+        else:
+            flash("Sorry no user found, password or email incorrect")
     return render_template('login.html')
 
 #homepage is shown once user is logged in
