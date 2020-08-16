@@ -1,12 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="container">
-    	<div class="jumbotron well">
-    		<h1>Welcome!</h1>
-    	    <p>Welcome to Mr Nielsen's <b>Flask Example</b> website. This website is an example of how cool stuff like Flask, Python, Ajax, SQLite and Boostrap can be used to create a fantastic website full of awesomeness...But first you need to login.</p>
-    		<p><a class="btn btn-primary btn-large" href="/admin">Admin</a></p>
-    	</div>
-    </div>
+	<h1>Home</h1>
+	<p>You have logged in as: <b>{{session['username']}}</b></p>
+	<p>The following session variables have been saved: <b>{{session}}</b></p>
+	<p>This is a python dictionary, you can access values using the keys. When you log out the session variables are destroyed.</p>
 {% endblock %}
 {% block scripts %}
 {% endblock %}
