@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Flask Example</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraph.css" />
+    <link href="https://cdn.jsdelivr.net/npm/jsxgraph@1.1.0/distrib/jsxgraph.css" />
     <link rel="stylesheet" href="../static/css/custom.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <!-- AJAX -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script> <!-- BOOTSTRAP -->
-    <script src="/static/scripts/jsonrequesthandler.js"></script> <!-- JSON HELPER -->
-    <script type="text/javascript" src="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraphcore.js"></script> <!-- DRAWING -->
+    <script src="/static/js/jsonrequesthandler.js"></script> <!-- JSON HELPER -->
+    <script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.1.0/distrib/jsxgraphcore.js"></script><!-- DRAWING -->
 </head>
 
 <body style="padding:30px;font-size:16px;">
@@ -20,7 +20,9 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse2">
                     <div class="navbar-nav">
-                        <a href="/home" class="nav-item nav-link">Home</a>
+                        <!--<a href="/bootstrap" class="nav-item nav-link">Bootstrap</a>
+                        <a href="/turtle" class="nav-item nav-link">Turtle</a>
+                        <a href="/json" class="nav-item nav-link">JSON</a>-->
                         <a href="/admin" class="nav-item nav-link">Admin</a>
                         <a href="/logoff" class="nav-item nav-link">Log Off</a>
                     </div>
@@ -28,13 +30,16 @@
             </nav><br>
     {% block content %}{% endblock %} <!-- Container for Content -->
     <footer>
-        {% for message in get_flashed_messages() %}
-        <div class='alert'>
-            {{message}}
-        </div>
-        {%endfor%}
+        <div id="jsonmessage" class="alert alert-info"></div> <!-- json message returned -->
+        {% if get_flashed_messages() %}
+            <div id="flashmessage" class="alert alert-danger"> <!-- server message returned -->
+            {% for message in get_flashed_messages() %}
+                <p>{{message}}</p>
+            {%endfor%}
+            </div>
+        {% endif %}
     </footer>
     <a href="https://github.com/bradnielsen2981/flasktemplate">The full code can be found on Github</a>
+    {% block scripts %}{% endblock %} <!-- Container for Scripts-->
 </body>
-   {% block scripts %}{% endblock %} <!-- Container for Scripts-->
 </html>

@@ -5,6 +5,7 @@ function JSONrequest(urlstring, methodstring, responsehandler=defaulthandler, pa
     $(document).ready(function() { //make sure script is fully loaded, otherwise errors will occur
         $.ajax({
             type: methodstring,
+            headers: { 'Access-Control-Allow-Origin': '*' },
             crossDomain: crossdomainbool, //THIS IS REQUIRED IF COMMUNICATING TO NON-LOCAL SERVER
             url: urlstring,
             data: parametersobject, //{var1:1,var2:"hello"} //like a Python Dictionary
@@ -23,5 +24,7 @@ function JSONrequest(urlstring, methodstring, responsehandler=defaulthandler, pa
 function defaulthandler(results)
 {
     console.log(message);
-    document.getElementById('message').innerHTML = results.message;
+    mblock = document.getElementById('jsonmessage');
+    mblock.display.style.visibility = visible;
+    mblock.innerHTML = results.message;
 }

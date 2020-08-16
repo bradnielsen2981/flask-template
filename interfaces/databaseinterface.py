@@ -39,7 +39,10 @@ class DatabaseHelper():
             self.logger.error("DATABASE ERROR: %s" % e)
             self.logger.error(query) 
         connection.close()
-        return ([dict(row) for row in result]) #change to a list of dictionaries
+        if result:
+            return ([dict(row) for row in result]) #change to a list of dictionaries
+        else:
+            return False
 
     # Created a helper function so to save time and also log results
     # Write your DELETE, INSERT, UPDATE Query, and pass in a Tuple(a,b,c etc ) representing any parameters

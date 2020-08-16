@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+	<h1>Javascript Turtle</h1>
+	<p><a href="http://jsxgraph.org/wp/index.html">JSXgraph</a></p>
+	<p>JSXGraph is a library of mathematical functions for drawing graphs etc. It includes a Javascript version of Python Turtle, which can be useful for drawing. The turtle script can be used to tell the turtle what to do.</p>
+	<div id="box" class="jxgbox" style="width:500px; height:500px;"></div>
+{% endblock %}
+{% block scripts %}
+	<script src="/static/js/turtletest.js"></script>
+{% endblock %}
