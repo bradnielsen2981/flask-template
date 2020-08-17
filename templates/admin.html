@@ -3,11 +3,14 @@
 <div class="container">
 <h1>Administration</h1>
 {% if data %}
-<table>
+<table class="table">
+    {% for row in data %}
     <tr>
-        <td>{{data[0]['username']}}</td>
-        <td></td>
+        {% for value in row.values() %}
+        <td>{{value}}</td>
+        {% endfor %}
     </tr>
+    {% endfor %}
 </table>
 {% endif %}
 </div>
