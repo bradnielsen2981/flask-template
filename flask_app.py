@@ -48,6 +48,7 @@ def home():
 #admin page only available to admin, redirects for anyone else
 @app.route('/admin', methods=['GET','POST'])
 def admin():
+    data = None
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')

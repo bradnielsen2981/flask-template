@@ -3,15 +3,20 @@
 <div class="container">
 <h1>Administration</h1>
 {% if data %}
-<table class="table">
-    {% for row in data %}
-    <tr>
-        {% for value in row.values() %}
-        <td>{{value}}</td>
+    <table class="table">
+        <tr>
+            {% for heading in data[0].keys() %}
+            <th>{{heading}}</th>
+            {% endfor %}
+        </tr>
+        {% for row in data %}
+        <tr>
+            {% for column in row.values() %}
+                <td>{{column}}</td>
+            {% endfor %}
+        </tr>
         {% endfor %}
-    </tr>
-    {% endfor %}
-</table>
+    </table>
 {% endif %}
 </div>
 {% endblock %}
