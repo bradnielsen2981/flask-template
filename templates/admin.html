@@ -2,6 +2,13 @@
 {% block content %}
 <div class="container">
 <h1>Administration</h1>
-<!-- The data that is sent back from the server is a List of Python Dictionaries -->
+{% if data %}
+<table>
+    <tr>
+        <td>{{data[0]['username']}}</td>
+        <td></td>
+    </tr>
+</table>
+{% endif %}
 </div>
 {% endblock %}
