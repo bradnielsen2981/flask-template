@@ -48,13 +48,13 @@ def home():
 #admin page only available to admin, redirects for anyone else
 @app.route('/admin', methods=['GET','POST'])
 def admin():
-    userdetails = None
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')
     else:
         return redirect('/') #user has not logged in
-    return render_template('admin.html', data=userdetails)
+    results = database.ViewQueryHelper("SELECT * FROM users")
+    return render_template('admin.html', data=results)
 
 #register a new user - activity for students - create a register page
 @app.route('/register', methods=['GET','POST'])
