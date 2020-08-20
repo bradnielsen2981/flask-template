@@ -30,7 +30,7 @@
             </nav><br>
     {% block content %}{% endblock %} <!-- Container for Content -->
     <footer>
-        <div id="jsonmessage" class="alert alert-info"></div> <!-- json message returned -->
+        <div id="jsonmessage" class="alert alert-info" style="display:none;"></div> <!-- json message returned -->
         {% if get_flashed_messages() %}
             <div id="flashmessage" class="alert alert-danger"> <!-- server message returned -->
             {% for message in get_flashed_messages() %}
