@@ -48,24 +48,40 @@ def home():
 #admin page only available to admin, redirects for anyone else
 @app.route('/admin', methods=['GET','POST'])
 def admin():
-    data = None
+    userdetails = database.ViewQueryHelper('SELECT * FROM users')
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')
     else:
         return redirect('/') #user has not logged in
-    results = database.ViewQueryHelper("SELECT * FROM users")
-    return render_template('admin.html', data=results)
+    if request.method == 'POST':
+        userids = request.form.getlist('delete') #to be used if getting a list of values
+        for userid in userids:
+            if int(userid) > 1:
+                database.ModifyQueryHelper('DELETE FROM users WHERE userid = ?',(int(userid),))
+        return redirect('./admin')
+    return render_template('admin.html', data=userdetails)
 
 #register a new user - activity for students - create a register page
 @app.route('/register', methods=['GET','POST'])
 def register():
     if request.method == "POST":
-        pass
-        #get all the form fields and store in variables
-        #if password does not equal password confirm return an error
-        #search database for email, if email is already in use return an error
-        #else insert new user into database and redirect to login page
+        password = request.form['password']
+        passwordconfirm = request.form['passwordconfirm']
+        if password != passwordconfirm:
+            flash("Your passwords do not match")
+            return render_template('register.html')
+        username = request.form['username']
+        #gender = request.form['gender'] 
+        #log(gender)
+        location = request.form['location']
+        email = request.form['email']
+        results = database.ViewQueryHelper('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
+        if results:
+            flash("Your email or username is already in use.")
+            return render_template('register.html')
+        database.ModifyQueryHelper('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
+        return redirect('./')
     return render_template('register.html')
 
 @app.route('/logoff')

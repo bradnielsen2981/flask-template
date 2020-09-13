@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<h1>Registration</h1>
+	<form action="/register" method="POST">
+		Username:<br>
+		<input type="text" name="username" value="" required><br>
+		Password:<br>
+		<input type="password" name="password" value="" required><br>
+		Password Confirm:<br>
+		<input type="password" name="passwordconfirm" value="" required><br>
+		Gender:<br>
+		<select id="gender" name="gender">
+			<option value="male">Male</option>
+			<option value="female">Female</option></select><br/>
+		Email:<br>
+		<input type="email" name="email" value="" required><br>	
+		Location:<br>
+		<input type="text" name="location" value="" required><br><br/>	
+		<input type="submit" value="Submit" class="button">
+	</form>
+</div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}
