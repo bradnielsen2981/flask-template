@@ -7,7 +7,7 @@
 import sqlite3
 import logging
 
-class DatabaseHelper():
+class DatabaseInterface():
 
     def __init__(self, location):
         self.logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ class DatabaseHelper():
 
     # A helper function to save time and also log sql errors
     # Write your Select Query, and pass in a Tuple (a,b,c etc) representing any parameters
-    def ViewQueryHelper(self, query, params=None):
+    def ViewQuery(self, query, params=None):
         connection = self.connect()
         result = None
         try:
@@ -46,7 +46,7 @@ class DatabaseHelper():
 
     # Created a helper function so to save time and also log results
     # Write your DELETE, INSERT, UPDATE Query, and pass in a Tuple(a,b,c etc ) representing any parameters
-    def ModifyQueryHelper(self, query, params=None):
+    def ModifyQuery(self, query, params=None):
         connection = self.connect()
         result = None
         try:

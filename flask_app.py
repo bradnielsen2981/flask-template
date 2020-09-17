@@ -1,22 +1,25 @@
 from flask import Flask, render_template, session, request, redirect, url_for, flash, jsonify
-#from flask_cors import CORS
+#from flask_mail import Mail, Message #to send an email
+#from flask_cors import CORS #avoid cross domain scripting errors
 import sqlite3, uuid, hashlib, sys, logging, math, time #other libraries
 from datetime import datetime
-from interfaces.databaseinterface import DatabaseHelper
+from interfaces.databaseinterface import DatabaseInterface
 
 #---SETTINGS for the Flask Web Application
-#-----------------------------------------------------------------------------------
+#------------------------------------------------------------------
 DEBUG = True #sets the level of logging to high
 SECRET_KEY = 'my random key can be anything' #this random sequence is required to encrypt Sessions
 app = Flask(__name__) #Creates a handle for the Flask Web Server
-#CORS(app)
+#CORS(app) #enables cross domain scripting protection
+#mail = Mail(app) #creates the smtp server using the Flask web server
 app.config.from_object(__name__) #Set app configuration using above SETTINGS
 #database = DatabaseHelper('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
 database = DatabaseHelper('test.sqlite')
 database.set_log(app.logger) #set the logger inside the database
+sys.tracebacklimit = 0 #lower the level of traceback - This works well on Python Anywhere
 
 
-#---HTTP REQUEST HANDLERS------------------------------------------------------
+#---HTTP REQUESTS / RESPONSES HANDLERS------------------------------------------------------
 #Login page
 @app.route('/', methods=['GET','POST'])
 def login():
@@ -25,7 +28,7 @@ def login():
     if request.method == "POST":  #if form data has been sent
         email = request.form['email']   #get the form field with the name 
         password = request.form['password']
-        userdetails = database.ViewQueryHelper("SELECT * FROM users WHERE email=? AND password=?",(email,password))
+        userdetails = database.ViewQuery("SELECT * FROM users WHERE email=? AND password=?",(email,password))
         if userdetails:
             row = userdetails[0] #userdetails is a list of dictionaries
             update_access(row['userid']) #calls my custom helper function
@@ -48,17 +51,17 @@ def home():
 #admin page only available to admin, redirects for anyone else
 @app.route('/admin', methods=['GET','POST'])
 def admin():
-    userdetails = database.ViewQueryHelper('SELECT * FROM users')
+    userdetails = database.ViewQuery('SELECT * FROM users')
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')
     else:
         return redirect('/') #user has not logged in
     if request.method == 'POST':
-        userids = request.form.getlist('delete') #to be used if getting a list of values
+        userids = request.form.getlist('delete') #getlist e.g checkboxes
         for userid in userids:
             if int(userid) > 1:
-                database.ModifyQueryHelper('DELETE FROM users WHERE userid = ?',(int(userid),))
+                database.ModifyQuery('DELETE FROM users WHERE userid = ?',(int(userid),))
         return redirect('./admin')
     return render_template('admin.html', data=userdetails)
 
@@ -72,15 +75,14 @@ def register():
             flash("Your passwords do not match")
             return render_template('register.html')
         username = request.form['username']
-        #gender = request.form['gender'] 
-        #log(gender)
+        #gender = request.form['gender'] #not in database yet
         location = request.form['location']
         email = request.form['email']
-        results = database.ViewQueryHelper('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
+        results = database.ViewQuery('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
         if results:
             flash("Your email or username is already in use.")
             return render_template('register.html')
-        database.ModifyQueryHelper('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
+        database.ModifyQuery('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
         return redirect('./')
     return render_template('register.html')
 
@@ -88,6 +90,8 @@ def register():
 def logoff():
     session.clear()
     return redirect('./')
+
+
 
 
 
@@ -123,7 +127,7 @@ def turtle():
         pass
     return render_template('turtle.html')
 
-#---JSON REQUEST HANDLERS------------------------------------------------#
+#---JSON REQUEST EXAMPLES HANDLERS------------------------------------------------#
 @app.route('/trighandler', methods=['GET','POST'])
 def trighandler():
     c = None
@@ -138,7 +142,7 @@ def trighandler():
 def getactiveusers():
     update_access(session['userid']) #calls my custom helper function
     fmt = "%d/%m/%Y %H:%M:%S"
-    users = database.ViewQueryHelper("SELECT username, lastaccess from users")
+    users = database.ViewQuery("SELECT username, lastaccess from users")
     activeusers = [] #blank list
     for user in users:
         td = datetime.now() - datetime.strptime(user['lastaccess'],fmt)
@@ -166,11 +170,17 @@ def check_password(hashed_password, user_password):
 def update_access(userid):
     fmt = "%d/%m/%Y %H:%M:%S"
     datenow = datetime.now().strftime(fmt)
-    database.ModifyQueryHelper("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
+    database.ModifyQuery("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
     return
+
+#sender="from@example.com",recipientlist=["to@example.com"])
+def send_email(message, sender, recipientlist):
+    msg = Message(message,sender,recipientlist)
+    mail.send(msg)
+
 #------------------------------------------------------------------#
 
 #main method called web server application
 if __name__ == '__main__':
     #app.run() #PYTHON ANYTWHERE
-    app.run(host='0.0.0.0', port=5000) #runs on port 5000
+    app.run(host='0.0.0.0', port=5000) #runs a local server on port 5000
