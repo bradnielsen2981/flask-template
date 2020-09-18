@@ -1,3 +1,4 @@
+#---PYTHON Libraries for import--------------------------------------
 from flask import Flask, render_template, session, request, redirect, url_for, flash, jsonify
 #from flask_mail import Mail, Message #to send an email
 #from flask_cors import CORS #avoid cross domain scripting errors
@@ -16,8 +17,7 @@ app.config.from_object(__name__) #Set app configuration using above SETTINGS
 #database = DatabaseHelper('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
 database = DatabaseHelper('test.sqlite')
 database.set_log(app.logger) #set the logger inside the database
-sys.tracebacklimit = 0 #lower the level of traceback - This works well on Python Anywhere
-
+sys.tracebacklimit = 0 #The lowest the level of python traceback - This works well on Python Anywhere
 
 #---HTTP REQUESTS / RESPONSES HANDLERS------------------------------------------------------
 #Login page
@@ -48,7 +48,7 @@ def home():
     data=None
     return render_template('home.html', data=data)
 
-#admin page only available to admin, redirects for anyone else
+#admin page only available to admin - allows admin to update or delete
 @app.route('/admin', methods=['GET','POST'])
 def admin():
     userdetails = database.ViewQuery('SELECT * FROM users')
@@ -86,11 +86,20 @@ def register():
         return redirect('./')
     return render_template('register.html')
 
+#update a current user - activity for students
+@app.route('/updateuser', methods=['GET','POST'])
+def updateuser():
+    if request.method == "GET":
+        userid = request.values.get('userid')
+        # inside admin page use <a href="{{ url_for('updateuser',userid=row['userid']) }}">Update</a> 
+    return render_template('register.html')
+
 @app.route('/logoff')
 def logoff():
     session.clear()
     return redirect('./')
 
+#-----------------------------------------------------------------------#
 
 
 
@@ -177,7 +186,7 @@ def update_access(userid):
 def send_email(message, sender, recipientlist):
     msg = Message(message,sender,recipientlist)
     mail.send(msg)
-
+    return
 #------------------------------------------------------------------#
 
 #main method called web server application
