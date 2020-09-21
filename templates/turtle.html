@@ -1,4 +1,7 @@
 {% extends "layout.html" %}
+{% block styles %}
+	<link href="https://cdn.jsdelivr.net/npm/jsxgraph@1.1.0/distrib/jsxgraph.css" />
+{% endblock %}
 {% block content %}
 <div class="container">
 	<h1>Javascript Turtle</h1>
@@ -8,5 +11,6 @@
 </div>
 {% endblock %}
 {% block scripts %}
-	<script src="/static/js/turtletest.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.1.0/distrib/jsxgraphcore.js"></script>
+	<script src="/static/js/turtleexample.js"></script>
 {% endblock %}

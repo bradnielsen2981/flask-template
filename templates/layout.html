@@ -3,28 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Flask Example</title>
+    <!-- CSS Links -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/jsxgraph@1.1.0/distrib/jsxgraph.css" />
     <link rel="stylesheet" href="../static/css/custom.css">
+    {% block styles %}{% endblock %} <!-- insert any custom css -->
+    <!-- Javascript Links -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <!-- AJAX -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script> <!-- BOOTSTRAP -->
     <script src="/static/js/jsonrequesthandler.js"></script> <!-- JSON HELPER -->
-    <script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.1.0/distrib/jsxgraphcore.js"></script><!-- DRAWING -->
 </head>
 
-<body style="padding:30px;font-size:16px;">
-        <nav class="navbar navbar-expand-lg navbar navbar-dark bg-danger">
+<body style="font-size:16px;">
+        <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary">
                 <a href="/" class="navbar-brand">Flask Example</a>
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse2">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse2">
                     <div class="navbar-nav">
-                        <!--<a href="/bootstrap" class="nav-item nav-link">Bootstrap</a>
-                        <a href="/turtle" class="nav-item nav-link">Turtle</a>
-                        <a href="/json" class="nav-item nav-link">JSON</a>-->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Template Examples
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <a class="dropdown-item" href="/bootstrap">Bootstrap</a>
+                              <a class="dropdown-item" href="/turtle">Turtle</a>
+                              <a class="dropdown-item" href="/json">JSON</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">IoT Examples
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <a class="dropdown-item" href="/brickpi">BrickPi</a>
+                              <a class="dropdown-item" href="/grovepi">GrovePi</a>
+                              <a class="dropdown-item" href="/googlechart">Google Chart</a>
+                            </div>
+                        </li>
                         <a href="/register" class="nav-item nav-link">Register</a>
-                        <a href="/admin" class="nav-item nav-link">Admin</a>
+                        {% if 'userid' in session %}
+                            {% if session['userid'] == 'admin' %}
+                                <a href="/admin" class="nav-item nav-link">Admin</a>
+                            {% endif %}
+                        {% endif %}
                         <a href="/logoff" class="nav-item nav-link">Log Off</a>
                     </div>
                 </div>

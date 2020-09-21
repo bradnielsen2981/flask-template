@@ -2,7 +2,7 @@ import grovepi
 import time, math, sys, logging, threading
 from di_sensors.easy_mutex import ifMutexAcquire, ifMutexRelease 
 from di_sensors.temp_hum_press import TempHumPress
-#from grove_rgb_lcd import # I NEED TO INCLUDE THIS FILE
+import grove_rgb_lcd
 
 #################THIS CODE IS YET TO BE TESTED#################
 
@@ -77,6 +77,11 @@ class GrovePiInterface():
         pinMode(button,"INPUT")		# Assign mode for Button as input
         button_status= digitalRead(button)
     '''
+
+    # this function might need to run for a period of time
+    def output_RGB(colour, message):   #colour is a tuple of (255,255,255)
+        grove_rgb_lcd.setRGB(colour)
+        grove_rgb_lcd.setText("message")
 
 # Only execute if this is the main file, good for testing code
 if __name__ == '__main__':

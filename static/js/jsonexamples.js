@@ -1,4 +1,4 @@
-/* JSON EXAMPLE OF SENDING MORE THAN ONE VARIABLE TO THE SERVER */
+/* ---JSON EXAMPLE OF SENDING MORE THAN ONE VARIABLE------------ */
 function findhypotenuse()
 {
     var sideA = document.getElementById('sideA').value;
@@ -14,7 +14,7 @@ function receivehypotenuse(result)
     document.getElementById('sideC').value = result.hypotenuse;
 }
 
-//---JSON RECURRING PING OF THE SERVER DEMO---------------------------------------------------
+/*---JSON RECURRING PING OF THE SERVER DEMO---------------------*/
 var recurringhandle = null; //A handle to the recurring function
 recurringhandle = setInterval(getactiveusers, 3000); //start pinging the server
 function getactiveusers()

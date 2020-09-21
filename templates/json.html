@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
-	<h1>JSON Demo using Flask Server</h1>
+	<h1>JSON Example</h1>
 	<p>JSON is a method of sending complex data through text encoding and also avoiding a page refresh.</p>
 <p>I have a created a helper function which can be used as follows: <b>JSONrequest</b>("/url", "POST",name_of_callback_function, {var1:"value1",var2:"value2"...})</p><p><i>The callback function receives a (result) object that contains response data.</i></p><p>A simpler call can be made: <b>JSONrequest</b>("/url", "POST") if you do not wish to send or receive data.</p>
 <div class="container p-3 my-3 border">
@@ -24,5 +24,5 @@
 </div>
 {% endblock %}
 {% block scripts %}
-	<script src="/static/js/jsontest.js"></script>
+	<script src="/static/js/jsonexample.js"></script>
 {% endblock %}

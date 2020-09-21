@@ -2,9 +2,9 @@
 from flask import Flask, render_template, session, request, redirect, url_for, flash, jsonify
 #from flask_mail import Mail, Message #to send an email
 #from flask_cors import CORS #avoid cross domain scripting errors
-import sqlite3, uuid, hashlib, sys, logging, math, time #other libraries
 from datetime import datetime
 from interfaces.databaseinterface import DatabaseInterface
+import interfaces.helpers
 
 #---SETTINGS for the Flask Web Application
 #------------------------------------------------------------------
@@ -17,7 +17,7 @@ app.config.from_object(__name__) #Set app configuration using above SETTINGS
 #database = DatabaseHelper('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
 database = DatabaseHelper('test.sqlite')
 database.set_log(app.logger) #set the logger inside the database
-sys.tracebacklimit = 0 #The lowest the level of python traceback - This works well on Python Anywhere
+
 
 #---HTTP REQUESTS / RESPONSES HANDLERS------------------------------------------------------
 #Login page
@@ -48,7 +48,7 @@ def home():
     data=None
     return render_template('home.html', data=data)
 
-#admin page only available to admin - allows admin to update or delete
+# admin page only available to admin - allows admin to update or delete
 @app.route('/admin', methods=['GET','POST'])
 def admin():
     userdetails = database.ViewQuery('SELECT * FROM users')
@@ -65,7 +65,8 @@ def admin():
         return redirect('./admin')
     return render_template('admin.html', data=userdetails)
 
-#register a new user - activity for students - create a register page
+# register a new user - Activity for students - create a register page
+# When registering, check if user already exists
 @app.route('/register', methods=['GET','POST'])
 def register():
     if request.method == "POST":
@@ -75,7 +76,7 @@ def register():
             flash("Your passwords do not match")
             return render_template('register.html')
         username = request.form['username']
-        #gender = request.form['gender'] #not in database yet
+        #gender = request.form['gender'] #not in database yet, uses drop down list
         location = request.form['location']
         email = request.form['email']
         results = database.ViewQuery('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
@@ -86,12 +87,14 @@ def register():
         return redirect('./')
     return render_template('register.html')
 
-#update a current user - activity for students
+# Activity for students
+# update a current user - activity for students - uses GET to pass a value to a URL
+# inside admin page use <a href="{{ url_for('updateuser',userid=row['userid']) }}">Update</a> 
 @app.route('/updateuser', methods=['GET','POST'])
 def updateuser():
     if request.method == "GET":
         userid = request.values.get('userid')
-        # inside admin page use <a href="{{ url_for('updateuser',userid=row['userid']) }}">Update</a> 
+        #Get the user based on userid and send data to registration page
     return render_template('register.html')
 
 @app.route('/logoff')
@@ -146,7 +149,7 @@ def trighandler():
         c = math.sqrt(a*a + b*b)
     return jsonify({"hypotenuse":c}) #return a python dictionary as JSON - it gets turned into an javascript object in javascript e.g result.hypotenuse 
 
-#json handler is continually called to get a list of the recent users
+# JSON handler is continually called to get a list of the recent users
 @app.route('/getactiveusers', methods=['GET','POST'])
 def getactiveusers():
     update_access(session['userid']) #calls my custom helper function
@@ -159,33 +162,11 @@ def getactiveusers():
             activeusers.append(user['username']) #makes a list of names
     return jsonify({'activeusers':activeusers}) #list of users
 
-#---HELPER FUNCTIONS-----------------------------------------------#
-#Log a variable to the error log or console
-def log(message):
-    app.logger.info(message)
-    return
-
-#for encrypting the password in the database
-def hash_password(password):
-    salt = uuid.uuid4().hex
-    return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt
-
-#for decrypting the password in the database - returns True if correct
-def check_password(hashed_password, user_password):
-    password, salt = hashed_password.split(':')
-    return password == hashlib.sha256(salt.encode() + user_password.encode()).hexdigest()
-
-#updates the users lastaccess in database
+# updates the users lastaccess in database
 def update_access(userid):
     fmt = "%d/%m/%Y %H:%M:%S"
     datenow = datetime.now().strftime(fmt)
     database.ModifyQuery("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
-    return
-
-#sender="from@example.com",recipientlist=["to@example.com"])
-def send_email(message, sender, recipientlist):
-    msg = Message(message,sender,recipientlist)
-    mail.send(msg)
     return
 #------------------------------------------------------------------#
 

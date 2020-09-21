@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container">
+        <h1>Google Chart Example</h1>
+        <!-- area for real time chart-->
+        <div id="light_gauge_chart" style="width: 400px; height: 120px;"></div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="static/googlechartsexample.js"></script>
+{% endblock %}
