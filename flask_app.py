@@ -152,7 +152,8 @@ def trighandler():
 # JSON handler is continually called to get a list of the recent users
 @app.route('/getactiveusers', methods=['GET','POST'])
 def getactiveusers():
-    update_access(session['userid']) #calls my custom helper function
+    if 'userid' in session:
+        update_access(session['userid']) #calls my custom helper function
     fmt = "%d/%m/%Y %H:%M:%S"
     users = database.ViewQuery("SELECT username, lastaccess from users")
     activeusers = [] #blank list
