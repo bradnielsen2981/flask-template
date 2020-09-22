@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<h1>BrickPi Example</h1>
+	<div class="row">
+		<button type="button" class="btn btn-warning" onclick="JSONrequest('/loadbrickpi','POST')">Load BrickPi</button>
+	</div>
+	{% if robotenabled %}
+	<div id="stats" class="row"> <!-- recurring function - use json to fetch the voltage, currentcommand and current routine -->
+    </div>
+	<div class="row text-center">
+		<div class="col-4">
+		<button type="button" class="btn btn-success" onclick="JSONrequest('/start','POST')">Start</button>
+		</div>
+		<div class="col-4">
+		<button type="button" class="btn btn-danger" onclick="JSONrequest('/stop','POST')">Stop</button>
+		</div>
+		<div class="col-4">
+		<button type="button" class="btn btn-dark" onclick="JSONrequest('/shutdown','POST')"">Shutdown Server</button>
+		</div>
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<!-- need to insert script that checks the current command and the current routine -->
+{% endblock %}

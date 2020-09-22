@@ -1,13 +1,11 @@
-import uuid, hashlib, sys, logging, math, time,  socket, os, re 
+import hashlib, socket
+import uuid, sys, logging, math, time, os, re
+from interfaces import databaseinterface
+from datetime import datetime
 
-#---HELPER FUNCTIONS-----------------------------------------------#
-sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere
+logger = logging.getLogger()
 
-#Log a variable to the error log or console
-def log(message):
-    app.logger.info(message)
-    return
-
+#-------------Hashing----------------------------#
 #for encrypting the password in the database
 def hash_password(password):
     salt = uuid.uuid4().hex
@@ -18,12 +16,7 @@ def check_password(hashed_password, user_password):
     password, salt = hashed_password.split(':')
     return password == hashlib.sha256(salt.encode() + user_password.encode()).hexdigest()
 
-#sender="from@example.com",recipientlist=["to@example.com"])
-def send_email(message, sender, recipientlist):
-    msg = Message(message,sender,recipientlist)
-    mail.send(msg)
-    return
-
+#------------GENERIC IP Functions-------------------#
 #get the ip address of the current computer
 def get_ip(self):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -40,3 +33,30 @@ def get_ip(self):
 # get the mac address of the current computer
 def get_macaddress(self):
     return(':'.join(re.findall('..', '%012x' % uuid.getnode())))
+
+#--DATABASE HELPER FUNCTIONS----------------------------------#
+# This has been designed to work with the users table
+# updates the users lastaccess in databaseinterface
+def update_access(userid):
+    fmt = "%d/%m/%Y %H:%M:%S"
+    datenow = datetime.now().strftime(fmt)
+    databaseinterface.ModifyQuery("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
+    return
+
+#--LOGGING HELPERS-----------------#
+#Log a message
+def log(message):
+    global logger
+    logger.info(message)
+    return
+
+def log_error(error):
+    global logger
+    logger.error(error)
+    return
+
+#set the logging
+def set_log(log):
+    global logger
+    logger = log
+    return

@@ -3,6 +3,7 @@ import time, math, sys, logging, threading
 from di_sensors.easy_mutex import ifMutexAcquire, ifMutexRelease 
 from di_sensors.temp_hum_press import TempHumPress
 import grove_rgb_lcd
+from interfaces import helpers
 
 #################THIS CODE IS YET TO BE TESTED#################
 
@@ -10,9 +11,9 @@ class GrovePiInterface():
 
     #Initialise log and timelimit (used to exit a function after time)
     def __init__(self, timelimit=20):
-        self.logger = logging.getLogger()
         self.CurrentCommand = "loading"
         self.Configured = False #is the grove configured?
+        return
 
     # This function will return the current light reading from the desired ANALOG port A0, A1 etc
     def read_light_sensor_analogueport(self, port):
@@ -22,7 +23,7 @@ class GrovePiInterface():
         try:
             sensor_value = grovepi.analogRead(light_sensor) # Get sensor value
         except IOError: #this doesnt appear to work
-            log.error("Error in reading the light sensor")
+            helpers.log_error("Error in reading the light sensor")
         return sensor_value
 
     # This function will return the current light reading from the desired ANALOG port A0, A1 
@@ -33,10 +34,10 @@ class GrovePiInterface():
         try:
             sensor_value = grovepi.ultrasonicRead(ultra) # Get sensor value
         except IOError: #this doesnt appear to work
-            log.error("Error in reading the ultra sensor")
+            helpers.log_error("Error in reading the ultra sensor")
         return sensor_value
 
-    #Turn on the led
+    #Turn on the led using digital port 
     def turn_on_led_digitalport(self, port):
         led = port
         grovepi.pinMode(led,"OUTPUT")
@@ -58,7 +59,7 @@ class GrovePiInterface():
         try:
             temp_humidity_list = grovepi.dht(port,0) #0 - type blue sensor
         except IOError: #this doesnt appear to work
-            log.error("Error in reading the temp and humidity sensor")
+            helpers.log_error("Error in reading the temp and humidity sensor")
         return temp_humidity_list
 
 
@@ -82,10 +83,8 @@ class GrovePiInterface():
     def output_RGB(colour, message):   #colour is a tuple of (255,255,255)
         grove_rgb_lcd.setRGB(colour)
         grove_rgb_lcd.setText("message")
+        return
 
 # Only execute if this is the main file, good for testing code
 if __name__ == '__main__':
     grove = GrovePiInterface(timelimit=20)
-    logger = logging.getLogger()
-    logger.setLevel(logging.info)
-    grove.set_log(logger)

@@ -5,7 +5,7 @@
     <title>Flask Example</title>
     <!-- CSS Links -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../static/css/custom.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
     {% block styles %}{% endblock %} <!-- insert any custom css -->
     <!-- Javascript Links -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <!-- AJAX -->
@@ -34,14 +34,14 @@
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">IoT Examples
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/brickpi">BrickPi</a>
-                              <a class="dropdown-item" href="/grovepi">GrovePi</a>
+                              <a class="dropdown-item" href="/brickpiexample">BrickPi</a>
+                              <a class="dropdown-item" href="/grovepiexample">GrovePi</a>
                               <a class="dropdown-item" href="/googlechart">Google Chart</a>
                             </div>
                         </li>
                         <a href="/register" class="nav-item nav-link">Register</a>
-                        {% if 'userid' in session %}
-                            {% if session['userid'] == 'admin' %}
+                        {% if 'permission' in session %}
+                            {% if session['permission'] == 'admin' %}
                                 <a href="/admin" class="nav-item nav-link">Admin</a>
                             {% endif %}
                         {% endif %}
@@ -51,6 +51,7 @@
             </nav><br>
     {% block content %}{% endblock %} <!-- Container for Content -->
     <footer>
+        <div class="container">
         <div id="jsonmessage" class="alert alert-info"></div> <!-- json message returned -->
         {% if get_flashed_messages() %}
             <div id="flashmessage" class="alert alert-danger"> <!-- server message returned -->
@@ -59,8 +60,9 @@
             {%endfor%}
             </div>
         {% endif %}
+        <a href="https://github.com/bradnielsen2981/flasktemplate">The full code can be found on Github.</a>
+        </div>
     </footer>
-    <a href="https://github.com/bradnielsen2981/flasktemplate">The full code can be found on Github</a>
     {% block scripts %}{% endblock %} <!-- Container for Scripts-->
 </body>
 </html>
