@@ -13,16 +13,16 @@ from datetime import datetime
 DEBUG = True #sets the level of logging to high
 SECRET_KEY = 'my random key can be anything' #required to encrypt Sessions
 app = Flask(__name__) #Creates a handle for the Flask Web Server
-app.register_blueprint(brickpiblueprint)
-app.register_blueprint(grovepiblueprint)
+app.register_blueprint(brickpiblueprint) #brickpi library needs to be installed
+app.register_blueprint(grovepiblueprint) #grove library needs to be installed
 app.register_blueprint(jsonblueprint)
 app.config.from_object(__name__) #Set app configuration using above SETTINGS
 #CORS(app) #enables cross domain scripting protection
-#set_mail_server(app) #needs email interface to be imported
+#helpers.set_mail_server(app) #flask_mail needs to be installed
 databaseinterface.set_location('test.sqlite')
 #databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
 databaseinterface.set_log(app.logger) #set the logger inside the database
-helpers.set_log(app.logger)
+helpers.set_log(app.logger) #call helpers.log to log info to console
 sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere
 
 #---HTTP REQUESTS / RESPONSES HANDLERS-------------------------------#
