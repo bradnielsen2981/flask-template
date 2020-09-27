@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask_mail import Mail, Message #Needs to be installed
+from flask_mail import Mail, Message 
 
 mailserver = None
 

@@ -2,25 +2,35 @@
 import uuid, sys, logging, math, time, os, re
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g 
 #from flask_cors import CORS #Needs to be installed, allows cross-domain scripting
-from brickpiblueprint import brickpiblueprint
-from grovepiblueprint import grovepiblueprint
-from jsonblueprint import jsonblueprint
 from interfaces import databaseinterface, helpers
-#from interfaces import emailinterface # Needs flask_mail to be installed 
 from datetime import datetime
 
 #---SETTINGS and GLOBALS----------------------------------#
 DEBUG = True #sets the level of logging to high
 SECRET_KEY = 'my random key can be anything' #required to encrypt Sessions
 app = Flask(__name__) #Creates a handle for the Flask Web Server
-app.register_blueprint(brickpiblueprint)
-app.register_blueprint(grovepiblueprint)
-app.register_blueprint(jsonblueprint)
 app.config.from_object(__name__) #Set app configuration using above SETTINGS
+app.config['jsonexamples'] = False
+app.config['brickpiexamples'] = False #will only work on Raspberry Pi with BrickPI
+app.config['grovepiexamples'] = True #will only work on Raspberry Pi with GrovePi
+app.config['emailexamples'] = True
+
+#---CONDITIONAL IMPORTS AND BLUEPRINT TO ENABLED ADDITIONAL VIEWS---#
+# app.config is a dictionary of global variables that can be accessed by templates
+if app.config['jsonexamples']:
+    from jsonblueprint import jsonblueprint
+    app.register_blueprint(jsonblueprint)
+if app.config['brickpiexamples']:
+    from brickpiblueprint import brickpiblueprint
+    app.register_blueprint(brickpiblueprint)
+if app.config['grovepiexamples']:
+    from grovepiblueprint import grovepiblueprint
+    app.register_blueprint(grovepiblueprint)
+if app.config['emailexamples']:
+    from interfaces import emailinterface # Needs flask_mail to be installed
+    emailinterface.set_mail_server(app) #needs flask_email to be installed
 #CORS(app) #enables cross domain scripting protection
-#set_mail_server(app) #needs email interface to be imported
-databaseinterface.set_location('test.sqlite')
-#databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
+databaseinterface.set_location('test.sqlite') #databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
 databaseinterface.set_log(app.logger) #set the logger inside the database
 helpers.set_log(app.logger)
 sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere

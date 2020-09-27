@@ -21,24 +21,38 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse2">
                     <div class="navbar-nav">
+                        
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Template Examples
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                               <a class="dropdown-item" href="/bootstrap">Bootstrap</a>
-                              <a class="dropdown-item" href="/turtle">Turtle</a>
+                              {% if config['jsonexamples'] %}
                               <a class="dropdown-item" href="/json">JSON</a>
+                              {% endif %}
                             </div>
                         </li>
+                        
+                        {% if config['grovepiexamples'] %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">IoT Examples
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">GrovePi Examples
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/brickpiexample">BrickPi</a>
                               <a class="dropdown-item" href="/grovepiexample">GrovePi</a>
                               <a class="dropdown-item" href="/googlechart">Google Chart</a>
                             </div>
                         </li>
+                        {% endif %}
+                        {% if config['brickpiexamples'] %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">BrickPi Examples
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <a class="dropdown-item" href="/brickpiexample">BrickPi</a>
+                              <a class="dropdown-item" href="/turtle">Turtle</a>
+                            </div>
+                        </li>
+                        {% endif %}
                         <a href="/register" class="nav-item nav-link">Register</a>
                         {% if 'permission' in session %}
                             {% if session['permission'] == 'admin' %}
