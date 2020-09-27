@@ -1,8 +1,7 @@
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
 from interfaces import databaseinterface, helpers
 from datetime import datetime
-import math
-
+import helpers
 
 jsonblueprint = Blueprint('jsonblueprint', __name__, template_folder='templates/json', static_folder='static/json')
 
@@ -21,7 +20,7 @@ def trighandler():
     if request.method == 'POST':
         a = float(request.form.get('sideA'))
         b = float(request.form.get('sideB'))
-        c = math.sqrt(a*a + b*b)
+        c = helpers.math.sqrt(a*a + b*b)
     return jsonify({"hypotenuse":c}) #return a python dictionary as JSON - it gets turned into an javascript object in javascript e.g result.hypotenuse 
 
 # JSON handler is continually called to get a list of the recent users

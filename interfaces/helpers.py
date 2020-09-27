@@ -1,6 +1,6 @@
 import hashlib, socket
 import uuid, sys, logging, math, time, os, re
-from interfaces import databaseinterface
+import databaseinterface
 from datetime import datetime
 
 logger = logging.getLogger()
@@ -46,12 +46,10 @@ def update_access(userid):
 #--LOGGING HELPERS-----------------#
 #Log a message
 def log(message):
-    global logger
     logger.info(message)
     return
 
 def log_error(error):
-    global logger
     logger.error(error)
     return
 

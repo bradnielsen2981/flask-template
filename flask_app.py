@@ -32,7 +32,7 @@ if app.config['emailexamples']:
 #CORS(app) #enables cross domain scripting protection
 databaseinterface.set_location('test.sqlite') #databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
 databaseinterface.set_log(app.logger) #set the logger inside the database
-helpers.set_log(app.logger)
+helpers.set_log(app.logger) #call helpers.log to log info to console
 sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere
 
 #---HTTP REQUESTS / RESPONSES HANDLERS-------------------------------#
