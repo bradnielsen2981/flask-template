@@ -1,5 +1,6 @@
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g 
-import interfaces.databaseinterface
+from interfaces import databaseinterface
+import helpers
 from datetime import datetime
 
 BRICKPIENABLED = False

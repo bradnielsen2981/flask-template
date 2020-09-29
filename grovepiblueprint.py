@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, render_template, session, request, redirect,
 from interfaces import databaseinterface
 from interfaces import grovepiinterface
 from datetime import datetime
-from interfaces import helpers
+import helpers
 import time
 
 grovepi = None #grove object
@@ -21,6 +21,7 @@ def grovepiload():
     grovepienabled = True
     if not grovepi:
         grovepi = grovepiinterface.GrovePiInterface(timelimit=20)
+        grovepi.set_log(helpers.logger)
         helpers.log("loaded grovepi")
     return redirect('/grovepiexample')
 
@@ -35,6 +36,9 @@ def grovepishutdown():
 # homepage for the grovepi
 @grovepiblueprint.route('/googlechart', methods=['GET','POST'])
 def googlechart():
+    if not grovepienabled:
+        flash("You need to load the grove pi!")
+        return redirect('/grovepiexample')
     return render_template('googlechart.html', grovepienabled=grovepienabled)
 
 #----------------------------------------------------------------------------#

@@ -2,7 +2,8 @@
 import uuid, sys, logging, math, time, os, re
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g 
 #from flask_cors import CORS #Needs to be installed, allows cross-domain scripting
-from interfaces import databaseinterface, helpers
+from interfaces import databaseinterface
+import helpers
 from datetime import datetime
 
 #---SETTINGS and GLOBALS----------------------------------#
@@ -35,7 +36,7 @@ if app.config['emailexamples']:
 databaseinterface.set_location('test.sqlite') #databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
 databaseinterface.set_log(app.logger) #set the logger inside the database
 helpers.set_log(app.logger) #call helpers.log to log info to console
-sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere
+sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere to cut down the traceback on errors
 
 #---HTTP REQUESTS / RESPONSES HANDLERS-------------------------------#
 #Login page
@@ -46,7 +47,7 @@ def login():
     if request.method == "POST":  #if form data has been sent
         email = request.form['email']   #get the form field with the name 
         password = request.form['password']
-        #TO DO - Hash password to see if it matches database
+        #Activity for students - Hash password to see if it matches database
         userdetails = databaseinterface.ViewQuery("SELECT * FROM users WHERE email=? AND password=?",(email,password))
         if userdetails:
             row = userdetails[0] #userdetails is a list of dictionaries
@@ -84,7 +85,7 @@ def admin():
         return redirect('./admin')
     return render_template('admin.html', data=userdetails)
 
-# register a new user - Activity for students - create a register page
+# Register a new user - Activity for students - create a register page
 # When registering, check if user already exists
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -95,6 +96,7 @@ def register():
             flash("Your passwords do not match")
             return render_template('register.html')
         username = request.form['username']
+        #Activity for students - update database to include a gender field and then modify the INSERT SQL below to include gender
         #gender = request.form['gender'] #not in databaseinterface yet, uses drop down list
         location = request.form['location']
         email = request.form['email']
@@ -108,14 +110,17 @@ def register():
     return render_template('register.html')
 
 # Activity for students
-# update a current user - activity for students - uses GET to pass a value to a URL
-# inside admin page use <a href="{{ url_for('updateuser',userid=row['userid']) }}">Update</a> to allow update of each user
+# Update a current user - activity for students - uses GET to pass a value to a URL
+# Inside admin page use: <a href="{{ url_for('updateuser',userid=row['userid']) }}">Update</a>
+# Create a copy of the registration page called update.html 
+# inside input tags use value='{{userdata['email']}}'
 @app.route('/updateuser', methods=['GET','POST'])
 def updateuser():
+    userdata = None
     if request.method == "GET":
         userid = request.values.get('userid')
-        #Get the user based on userid and send data to registration page
-    return render_template('register.html')
+        #Get the user from the database from userid and send data to registration page
+    return render_template('update.html', userdata=userdata)
 
 # log off - clear the session dictionary
 @app.route('/logoff')
@@ -134,5 +139,5 @@ def bootstrap():
 
 #main method called web server application
 if __name__ == '__main__':
-    #app.run() #PYTHON ANYTWHERE
+    #app.run() #PYTHON ANYTWHERE will decide the port
     app.run(host='0.0.0.0', port=5000) #runs a local server on port 5000

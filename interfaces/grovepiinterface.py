@@ -3,8 +3,6 @@ import time, math, sys, logging, threading
 from di_sensors.easy_mutex import ifMutexAcquire, ifMutexRelease 
 from di_sensors.temp_hum_press import TempHumPress
 import grove_rgb_lcd
-#from interfaces import helpers  #when run as a blueprint the import needs to change
-import helpers
 
 ENABLED = False
 grovepilightswitch = False
@@ -14,21 +12,28 @@ class GrovePiInterface():
     #Initialise log and timelimit (used to exit a function after time)
     def __init__(self, timelimit=20):
         global ENABLED
+        self.logger = logging.getLogger()
         self.timelimit = timelimit
         self.CurrentCommand = "loading"
         self.Configured = False #is the grove configured?
         ENABLED = True
         return
 
+        #changes the logger
+    def set_log(self, logger):
+        self.logger=logger
+        return
+
     # This function will return the current light reading from the desired ANALOG port A0
     def read_light_sensor_analogueport(self, port):
+        self.log("TESTING")
         light_sensor = port
         grovepi.pinMode(light_sensor,"INPUT")
         sensor_value = None
         try:
             sensor_value = grovepi.analogRead(light_sensor) # Get sensor value
         except IOError: #this doesnt appear to work
-            helpers.log_error("Error in reading the light sensor")
+            self.log("Error in reading the light sensor")
         return sensor_value
 
     # This function will return the current ultra sonic from the digital port
@@ -39,7 +44,7 @@ class GrovePiInterface():
         try:
             sensor_value = grovepi.ultrasonicRead(ultra) # Get sensor value
         except IOError: #this doesnt appear to work
-            helpers.log_error("Error in reading the ultra sensor")
+            self.log("Error in reading the ultra sensor")
         return sensor_value
 
     #Turn on the led using digital port 
@@ -62,7 +67,7 @@ class GrovePiInterface():
         try:
             temp_humidity_list = grovepi.dht(port,0) #0 - type blue sensor
         except IOError: #this doesnt appear to work
-            helpers.log_error("Error in reading the temp and humidity sensor")
+            self.log("Error in reading the temp and humidity sensor")
         return temp_humidity_list
 
     #get the current moisture
@@ -73,7 +78,7 @@ class GrovePiInterface():
         try:
             moisture = grovepi.analogRead(moisture_sensor)
         except IOError: #this doesnt appear to work
-            helpers.log_error("Error in reading the moisture sensor")
+            self.log("Error in reading the moisture sensor")
         return moisture
 
     # this function might need to run for a period of time
@@ -82,10 +87,15 @@ class GrovePiInterface():
         grove_rgb_lcd.setText(message)
         return
 
+        #log out whatever !!!!!THIS IS NOT WORKING UNLESS FLASK LOG USED, DONT KNOW WHY!!!!!
+    def log(self, message):
+        self.logger.error(message)
+        return
+
 # Only execute if this is the main file, good for testing code
 if __name__ == '__main__':
     grove = GrovePiInterface(timelimit=20)
     colour = (0,128,64)
     message = "this is working"
     grove.output_RGB(colour,message)
-    #print(grove.read_light_sensor_analogueport(2))
+    print(grove.read_light_sensor_analogueport(2))

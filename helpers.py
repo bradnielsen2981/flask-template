@@ -1,6 +1,6 @@
 import hashlib, socket
 import uuid, sys, logging, math, time, os, re
-import databaseinterface
+from interfaces import databaseinterface
 from datetime import datetime
 
 logger = logging.getLogger()
