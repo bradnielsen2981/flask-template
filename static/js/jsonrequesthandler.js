@@ -23,8 +23,8 @@ function JSONrequest(urlstring, methodstring, responsehandler=defaulthandler, pa
 //function responsehandler, by default receives the results object which has been converted from JSON
 function defaulthandler(results)
 {
-    console.log(message);
+    console.log(results.message);
     mblock = document.getElementById('jsonmessage');
-    mblock.display.style.visibility = visible;
+    mblock.style.visibility = "visible";
     mblock.innerHTML = results.message;
 }

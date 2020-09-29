@@ -10,7 +10,6 @@
     <!-- Javascript Links -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <!-- AJAX -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script> <!-- BOOTSTRAP -->
-    <script src="/static/js/jsonrequesthandler.js"></script> <!-- JSON HELPER -->
 </head>
 
 <body style="font-size:16px;">
@@ -32,7 +31,6 @@
                               {% endif %}
                             </div>
                         </li>
-                        
                         {% if config['grovepiexamples'] %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">GrovePi Examples
@@ -77,6 +75,7 @@
         <a href="https://github.com/bradnielsen2981/flasktemplate">The full code can be found on Github.</a>
         </div>
     </footer>
+    <script src="/static/js/jsonrequesthandler.js"></script> <!-- JSON HELPER -->
     {% block scripts %}{% endblock %} <!-- Container for Scripts-->
 </body>
 </html>

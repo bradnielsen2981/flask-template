@@ -3,9 +3,11 @@ import time, math, sys, logging, threading
 from di_sensors.easy_mutex import ifMutexAcquire, ifMutexRelease 
 from di_sensors.temp_hum_press import TempHumPress
 import grove_rgb_lcd
+#from interfaces import helpers  #when run as a blueprint the import needs to change
 import helpers
 
 ENABLED = False
+grovepilightswitch = False
 
 class GrovePiInterface():
 
@@ -41,18 +43,15 @@ class GrovePiInterface():
         return sensor_value
 
     #Turn on the led using digital port 
-    def turn_on_led_digitalport(self, port):
-        led = port
-        grovepi.pinMode(led,"OUTPUT")
-        grovepi.digitalWrite(led,255)
-        helpers.log("GOT HERE")
-        return
-
-    #Turn off the led
-    def turn_off_led_digitalport(self, port):
-        led = port
-        grovepi.pinMode(led,"OUTPUT")
-        grovepi.digitalWrite(led,0)
+    def switch_led_digitalport_value(self, port, value):
+        global grovepilightswitch
+        grovepi.pinMode(port,"OUTPUT") #should be in initialise
+        if grovepilightswitch:
+            grovepi.digitalWrite(port,0)
+            grovepilightswitch = False
+        else:
+            grovepi.digitalWrite(port,value)
+            grovepilightswitch = True
         return
 
     #read temp and humidity
@@ -77,22 +76,16 @@ class GrovePiInterface():
             helpers.log_error("Error in reading the moisture sensor")
         return moisture
 
-    '''
-        pinMode(buzzer_pin,"OUTPUT")
-        digitalWrite(buzzer_pin,1)
-        digitalWrite(buzzer_pin,0)
-        
-        pinMode(button,"INPUT")		# Assign mode for Button as input
-        button_status= digitalRead(button)
-    '''
-
     # this function might need to run for a period of time
-    def output_RGB(colour, message):   #colour is a tuple of (255,255,255)
-        grove_rgb_lcd.setRGB(colour)
-        grove_rgb_lcd.setText("message")
+    def output_RGB(self, colour, message):   #colour is a tuple of (255,255,255)
+        grove_rgb_lcd.setRGB(*colour) 
+        grove_rgb_lcd.setText(message)
         return
 
 # Only execute if this is the main file, good for testing code
 if __name__ == '__main__':
     grove = GrovePiInterface(timelimit=20)
-    print(grove.read_temp_humidity_sensor_digitalport(3))
+    colour = (0,128,64)
+    message = "this is working"
+    grove.output_RGB(colour,message)
+    #print(grove.read_light_sensor_analogueport(2))

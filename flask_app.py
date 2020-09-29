@@ -30,6 +30,8 @@ if app.config['emailexamples']:
     from interfaces import emailinterface # Needs flask_mail to be installed
     emailinterface.set_mail_server(app) #needs flask_email to be installed
 #CORS(app) #enables cross domain scripting protection
+
+#--SET UP DATABASE
 databaseinterface.set_location('test.sqlite') #databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
 databaseinterface.set_log(app.logger) #set the logger inside the database
 helpers.set_log(app.logger) #call helpers.log to log info to console

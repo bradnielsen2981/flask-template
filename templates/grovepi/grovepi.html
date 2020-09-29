@@ -2,9 +2,36 @@
 {% block content %}
 <div class="container">
 	<h1>GrovePi Example</h1>
+	<br/>
+	{% if not grovepienabled %}
 	<div class="row">
-		<button type="button" class="btn btn-warning" onclick="JSONrequest('/loadgrovepi','POST')">Load GrovePi</button>
+		<div class="col-12">
+			<form action="/loadgrovepi" method="GET">
+				<input type="submit" class="btn btn-primary" value="Load GrovePi"/>
+			</form>
+		</div>
 	</div>
+	{% else %}
+	<div class="row">
+		<div class="col-12">
+			<form action="/shutdowngrovepi" method="GET">
+				<input type="submit" class="btn btn-primary" value="Shutdown GrovePi"/>
+			</form>
+		</div>
+	</div>		
+	<div class="row">
+		<div class="col-12">
+			<button type="button" class="btn btn-success" onclick="JSONrequest('/lightswitch','POST')">Turn On or Off Light</button>
+		</div>
+	</div>
+	<br/>
+	<div class="row">
+		<div class="col-12">
+		<button type="button" class="btn btn-danger" onclick="JSONrequest('/grovepilcd','POST')">GrovePi LCD</button>
+		<input type="text" class="form-control"></input>
+		</div>
+	</div>
+	{% endif %}
 </div>
 {% endblock %}
 {% block scripts %}

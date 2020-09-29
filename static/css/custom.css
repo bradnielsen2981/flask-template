@@ -3,6 +3,7 @@
 #jsonmessage { visibility: hidden;}
 footer { margin-top:20px; }
 .container { margin:20px; }
-.alert { color:red; }
+.alert { color:black; }
 h1, h2 { margin-bottom:20px !important; }
-.row { padding-left:15px; }
+.row { margin:8px; }
+.form-control { margin:3px; margin-left:0px; }
