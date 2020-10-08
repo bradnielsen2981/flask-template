@@ -11,9 +11,9 @@ DEBUG = True #sets the level of logging to high
 SECRET_KEY = 'my random key can be anything' #required to encrypt Sessions
 app = Flask(__name__) #Creates a handle for the Flask Web Server
 app.config.from_object(__name__) #Set app configuration using above SETTINGS
-app.config['jsonexamples'] = False
+app.config['jsonexamples'] = True
 app.config['brickpiexamples'] = False #will only work on Raspberry Pi with BrickPI
-app.config['grovepiexamples'] = True #will only work on Raspberry Pi with GrovePi
+app.config['grovepiexamples'] = False #will only work on Raspberry Pi with GrovePi
 app.config['emailexamples'] = True
 app.config['crossdomainscripting'] = False #allows the server to be accessed from another domain (API)
 
@@ -43,7 +43,7 @@ databaseinterface.set_location('test.sqlite')
 #databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE!!!
 databaseinterface.set_log(app.logger) #set the logger inside the database
 
-#---HTTP REQUESTS / RESPONSES HANDLERS-------------------------------#
+#---HTTP REQUESTS / REQUEST HANDLERS-------------------------------#
 #Login page
 @app.route('/', methods=['GET','POST'])
 def login():
@@ -141,6 +141,16 @@ def bootstrap():
         return redirect('./')   #need to use the dot to avoid redirecting data
     data=None
     return render_template('bootstrap.html', data=data)
+
+#a hard shutdown of the web server - only the admin can shutdown the server
+@app.route('/shutdown', methods=['GET','POST'])
+def shutdown():
+    if 'permission' in session: #check to see if session cookie contains the permission level
+        if session['permission'] != 'admin':
+            return redirect('./')
+    func = request.environ.get('werkzeug.server.shutdown')
+    func()
+    return
 #------------------------------------------------------------------#
 
 #main method called web server application

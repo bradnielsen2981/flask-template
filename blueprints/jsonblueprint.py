@@ -1,5 +1,5 @@
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
-from interfaces import databaseinterface, helpers
+from interfaces import databaseinterface
 from datetime import datetime
 import helpers
 

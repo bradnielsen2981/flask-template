@@ -16,7 +16,7 @@ function receivehypotenuse(result)
 
 /*---JSON RECURRING PING OF THE SERVER DEMO---------------------*/
 var recurringhandle = null; //A handle to the recurring function
-recurringhandle = setInterval(getactiveusers, 3000); //start pinging the server
+recurringhandle = setInterval(getactiveusers, 5000); //start pinging the server
 function getactiveusers()
 {
     JSONrequest('/getactiveusers', 'POST', receiveactiveusers);
@@ -37,7 +37,7 @@ function gethero()
 {
     apikey = "10158457047547165"
     heroname = document.getElementById("heroname").value;
-    proxy = "https://cors-anywhere.herokuapp.com/"; //annoying way of bypassing CORS
+    proxy = "https://cors-anywhere.herokuapp.com/"; //annoying way of bypassing cross domain scripting errors
     url = proxy + "https://superheroapi.com/api/" + apikey + "/search/" + heroname;
     JSONrequest(url, 'GET', superheroapi, null, "json", true);
 }
@@ -46,9 +46,14 @@ function superheroapi(result)
 {
     document.getElementById("hero").innerHTML = "";
     console.log(result.results);
-    result.results.forEach(displayhero);
+    if (result.results)
+    {
+        result.results.forEach(displayhero);
+    }
 }
 function displayhero(hero)
 {
     document.getElementById("hero").innerHTML += `<p>,<h3>${hero.name}</h3><br/><image src=${hero.image.url} /></p>`;
+    document.getElementById("jsonmessage").innerHTML = `<h3>Result Object</h3><p>${JSON.stringify(hero)}</p>`;
+    document.getElementById("jsonmessage").style.visibility = "visible";
 }
