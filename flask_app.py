@@ -22,7 +22,7 @@ helpers.set_log(app.logger) #call helpers.log to log info to console
 sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere to cut down the traceback on errors!!
 
 #---CONDITIONAL IMPORTS AND BLUEPRINT TO ENABLED ADDITIONAL VIEWS---#
-# app.config is a dictionary of global variables that can be accessed by templates
+# app.config is a dictionary of global flask variables that can be accessed by html templates
 if app.config['jsonexamples']:
     from blueprints.jsonblueprint import jsonblueprint
     app.register_blueprint(jsonblueprint)
@@ -134,7 +134,7 @@ def logoff():
     session.clear()
     return redirect('./')
 
-# bootstrap demo
+# bootstrap demo - Bootstrap is linked to the layout.html page - read W3 schools for more information
 @app.route('/bootstrap', methods=['GET','POST'])
 def bootstrap():
     if 'userid' not in session: #userid hasnt logged in
