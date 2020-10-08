@@ -1,3 +1,4 @@
+#these imports work relative to the flask app file
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
 from interfaces import databaseinterface
 from interfaces import grovepiinterface

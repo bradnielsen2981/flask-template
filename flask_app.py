@@ -15,28 +15,33 @@ app.config['jsonexamples'] = False
 app.config['brickpiexamples'] = False #will only work on Raspberry Pi with BrickPI
 app.config['grovepiexamples'] = True #will only work on Raspberry Pi with GrovePi
 app.config['emailexamples'] = True
+app.config['crossdomainscripting'] = False #allows the server to be accessed from another domain (API)
+
+# SET LOGGING- log functions are available from helpers.py - import helpers to get logging
+helpers.set_log(app.logger) #call helpers.log to log info to console
+sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere to cut down the traceback on errors!!
 
 #---CONDITIONAL IMPORTS AND BLUEPRINT TO ENABLED ADDITIONAL VIEWS---#
 # app.config is a dictionary of global variables that can be accessed by templates
 if app.config['jsonexamples']:
-    from jsonblueprint import jsonblueprint
+    from blueprints.jsonblueprint import jsonblueprint
     app.register_blueprint(jsonblueprint)
 if app.config['brickpiexamples']:
-    from brickpiblueprint import brickpiblueprint
+    from blueprints.brickpiblueprint import brickpiblueprint
     app.register_blueprint(brickpiblueprint)
 if app.config['grovepiexamples']:
-    from grovepiblueprint import grovepiblueprint
+    from blueprints.grovepiblueprint import grovepiblueprint
     app.register_blueprint(grovepiblueprint)
 if app.config['emailexamples']:
     from interfaces import emailinterface # Needs flask_mail to be installed
     emailinterface.set_mail_server(app) #needs flask_email to be installed
-#CORS(app) #enables cross domain scripting protection
+if app.config['crossdomainscripting']:
+    CORS(app) #enables cross domain scripting protection
 
 #--SET UP DATABASE
-databaseinterface.set_location('test.sqlite') #databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE
+databaseinterface.set_location('test.sqlite') 
+#databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE!!!
 databaseinterface.set_log(app.logger) #set the logger inside the database
-helpers.set_log(app.logger) #call helpers.log to log info to console
-sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere to cut down the traceback on errors
 
 #---HTTP REQUESTS / RESPONSES HANDLERS-------------------------------#
 #Login page
@@ -57,7 +62,8 @@ def login():
             session['permission'] = row['permission']
             return redirect('./home')
         else:
-            flash("Sorry no user found, password or email incorrect")
+            log("Login failed for " + str(email) + " from " + str(get_user_ip()))
+            flash("Sorry no user found, password or email incorrect") #flash will send messages to the screen
     return render_template('login.html')
 
 #homepage is shown once user is logged in
@@ -80,8 +86,8 @@ def admin():
     if request.method == 'POST':
         userids = request.form.getlist('delete') #getlist e.g checkboxes
         for userid in userids:
-            if int(userid) > 1:
-                databaseinterface.ModifyQuery('DELETE FROM users WHERE userid = ?',(int(userid),))
+            if int(userid) > 1: #ensure that you can not delete the admin
+                databaseinterface.ModifyQuery('DELETE FROM users WHERE userid = ?',(int(userid),)) #a tuple needs atleast 1 comma
         return redirect('./admin')
     return render_template('admin.html', data=userdetails)
 
@@ -139,5 +145,5 @@ def bootstrap():
 
 #main method called web server application
 if __name__ == '__main__':
-    #app.run() #PYTHON ANYTWHERE will decide the port
+    #app.run() #PYTHON ANYTWHERE!!! will decide the port
     app.run(host='0.0.0.0', port=5000) #runs a local server on port 5000

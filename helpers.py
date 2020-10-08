@@ -1,4 +1,5 @@
 import hashlib, socket
+from flask import request
 import uuid, sys, logging, math, time, os, re
 from interfaces import databaseinterface
 from datetime import datetime
@@ -17,8 +18,8 @@ def check_password(hashed_password, user_password):
     return password == hashlib.sha256(salt.encode() + user_password.encode()).hexdigest()
 
 #------------GENERIC IP Functions-------------------#
-#get the ip address of the current computer
-def get_ip(self):
+#get the ip address of the current server
+def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         # doesn't even have to be reachable
@@ -30,8 +31,12 @@ def get_ip(self):
         s.close()
     return IP
 
+# get the ip address of the client who made the request
+def get_user_ip():
+    return request.remote_addr
+
 # get the mac address of the current computer
-def get_macaddress(self):
+def get_macaddress():
     return(':'.join(re.findall('..', '%012x' % uuid.getnode())))
 
 #--DATABASE HELPER FUNCTIONS----------------------------------#
