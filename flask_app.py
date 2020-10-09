@@ -12,8 +12,8 @@ app = Flask(__name__) #Creates a handle for the Flask Web Server
 app.config.from_object(__name__) #Set app configuration using above SETTINGS
 app.config['jsonexamples'] = True
 app.config['brickpiexamples'] = False #will only work on Raspberry Pi with BrickPI
-app.config['grovepiexamples'] = False #will only work on Raspberry Pi with GrovePi
-app.config['emailexamples'] = True
+app.config['grovepiexamples'] = True #will only work on Raspberry Pi with GrovePi
+app.config['emailexamples'] = False
 app.config['crossdomainscripting'] = False #allows the server to be accessed from another domain (API)
 
 #--SET LOGGING--------------# log functions are available from helpers.py - import helpers to get logging
