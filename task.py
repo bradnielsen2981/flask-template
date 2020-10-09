@@ -29,3 +29,7 @@ def read_temp_humidity_sensor_digitalport(port):
     except IOError: #this doesnt appear to work
         print("Error in reading the temp and humidity sensor")
     return temp_humidity_list
+
+#turn on the light on digital port 2, 255
+switch_led_digitalport_value(2)
+print("Temperature and Humidity: " + str(read_temp_humidity_sensor_digitalport(3)))
