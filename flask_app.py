@@ -1,7 +1,6 @@
 #---PYTHON Libraries for import--------------------------------------
 import uuid, sys, logging, math, time, os, re
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g 
-#from flask_cors import CORS #Needs to be installed, allows cross-domain scripting
 from interfaces import databaseinterface
 import helpers
 from datetime import datetime
@@ -17,11 +16,11 @@ app.config['grovepiexamples'] = False #will only work on Raspberry Pi with Grove
 app.config['emailexamples'] = True
 app.config['crossdomainscripting'] = False #allows the server to be accessed from another domain (API)
 
-# SET LOGGING- log functions are available from helpers.py - import helpers to get logging
+#--SET LOGGING--------------# log functions are available from helpers.py - import helpers to get logging
 helpers.set_log(app.logger) #call helpers.log to log info to console
 sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere to cut down the traceback on errors!!
 
-#---CONDITIONAL IMPORTS AND BLUEPRINT TO ENABLED ADDITIONAL VIEWS---#
+#---CONDITIONAL IMPORTS AND BLUEPRINTS TO ENABLED ADDITIONAL VIEWS---#
 # app.config is a dictionary of global flask variables that can be accessed by html templates
 if app.config['jsonexamples']:
     from blueprints.jsonblueprint import jsonblueprint
@@ -36,6 +35,7 @@ if app.config['emailexamples']:
     from interfaces import emailinterface # Needs flask_mail to be installed
     emailinterface.set_mail_server(app) #needs flask_email to be installed
 if app.config['crossdomainscripting']:
+    from flask_cors import CORS #Needs to be installed, allows cross-domain scripting
     CORS(app) #enables cross domain scripting protection
 
 #--SET UP DATABASE
