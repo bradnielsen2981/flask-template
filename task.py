@@ -1,27 +1,26 @@
 import grovepi
 
 ENABLED = True
-grovepilightswitch = False
+GROVEPILIGHTSWITCH = False
 
 # Turn on the led using digital port 
 def switch_led_digitalport_value(port, value=255):
     if not ENABLED:
         return -1
-    global grovepilightswitch
+    global GROVEPILIGHTSWITCH
     grovepi.pinMode(port,"OUTPUT") #should be in initialise
-    if grovepilightswitch:
+    if GROVEPILIGHTSWITCH:
         grovepi.digitalWrite(port,0)
-        grovepilightswitch = False
+        GROVEPILIGHTSWITCH = False
     else:
         grovepi.digitalWrite(port,value)
-        grovepilightswitch = True
+        GROVEPILIGHTSWITCH = True
     return
 
 # Read temp and humidity
 def read_temp_humidity_sensor_digitalport(port):
     if not ENABLED:
         return -1
-    tempsensor = port
     grovepi.pinMode(tempsensor,"INPUT")
     temp_humidity_list = None
     try:
