@@ -2,8 +2,6 @@ import hashlib, socket
 import uuid, sys, logging, math, time, os, re
 from datetime import datetime
 import globalvars
-import urllib.parse
-import urllib.request
 
 #-------------Hashing----------------------------#
 #for encrypting the password in the database
@@ -57,13 +55,3 @@ def update_access(userid):
     globalvars.DATABASE.ModifyQuery("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
     return
 
-#---EXTERNAL URL REQUEST LIBRARY---------------------------------------#
-def sendurlrequest(url, dictofvalues):
-    data = urllib.parse.urlencode(dictofvalues)
-    data = data.encode('ascii') # data should be bytes
-    req = urllib.request.Request(url, data)
-
-    #if data is returned
-    with urllib.request.urlopen(req) as response:
-        responsedata = response.read()
-    return responsedata
