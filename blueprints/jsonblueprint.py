@@ -1,9 +1,12 @@
+#these imports work relative to the flask app file
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
-from interfaces import databaseinterface
+import urllib.request
 from datetime import datetime
 import helpers
+import globalvars
 
 jsonblueprint = Blueprint('jsonblueprint', __name__, template_folder='templates/json', static_folder='static/json')
+DATABASE = globalvars.DATABASE
 
 #json test page
 @jsonblueprint.route('/json', methods=['GET','POST'])
@@ -26,15 +29,19 @@ def trighandler():
 # JSON handler is continually called to get a list of the recent users
 @jsonblueprint.route('/getactiveusers', methods=['GET','POST'])
 def getactiveusers():
+    activeusers = None
     if 'userid' in session:
         helpers.update_access(session['userid']) #calls my custom helper function
     fmt = "%d/%m/%Y %H:%M:%S"
-    users = databaseinterface.ViewQuery("SELECT username, lastaccess from users")
+    users = DATABASE.ViewQuery("SELECT username, lastaccess from users")
+    DATABASE.disconnect() #need to keep disconnecting 
     activeusers = [] #blank list
     for user in users:
         if user['lastaccess']:
             td = datetime.now() - datetime.strptime(user['lastaccess'],fmt)
             if td.seconds < 120:
-                activeusers.append(user['username']) #makes a list of names'''
+                activeusers.append(user['username']) #makes a list of names
     return jsonify({'activeusers':activeusers}) #list of users
+
+
 

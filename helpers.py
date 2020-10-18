@@ -1,10 +1,9 @@
 import hashlib, socket
-from flask import request
 import uuid, sys, logging, math, time, os, re
-from interfaces import databaseinterface
 from datetime import datetime
-
-logger = logging.getLogger()
+import globalvars
+import urllib.parse
+import urllib.request
 
 #-------------Hashing----------------------------#
 #for encrypting the password in the database
@@ -39,27 +38,32 @@ def get_user_ip():
 def get_macaddress():
     return(':'.join(re.findall('..', '%012x' % uuid.getnode())))
 
+#--LOGGING HELPERS-----------------#
+#Log a message
+def log(message):
+    LOGGER.info(message)
+    return
+
+def log_error(error):
+    LOGGER.error(error)
+    return
+
 #--DATABASE HELPER FUNCTIONS----------------------------------#
 # This has been designed to work with the users table
 # updates the users lastaccess in databaseinterface
 def update_access(userid):
     fmt = "%d/%m/%Y %H:%M:%S"
     datenow = datetime.now().strftime(fmt)
-    databaseinterface.ModifyQuery("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
+    globalvars.DATABASE.ModifyQuery("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
     return
 
-#--LOGGING HELPERS-----------------#
-#Log a message
-def log(message):
-    logger.info(message)
-    return
+#---EXTERNAL URL REQUEST LIBRARY---------------------------------------#
+def sendurlrequest(url, dictofvalues):
+    data = urllib.parse.urlencode(dictofvalues)
+    data = data.encode('ascii') # data should be bytes
+    req = urllib.request.Request(url, data)
 
-def log_error(error):
-    logger.error(error)
-    return
-
-#set the logging
-def set_log(log):
-    global logger
-    logger = log
-    return
+    #if data is returned
+    with urllib.request.urlopen(req) as response:
+        responsedata = response.read()
+    return responsedata

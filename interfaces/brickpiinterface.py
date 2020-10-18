@@ -5,15 +5,13 @@ from di_sensors.inertial_measurement_unit import InertialMeasurementUnit
 from di_sensors.temp_hum_press import TempHumPress
 from enum import Enum
 
-#this needs to go inside the class at somepoint, im trying to avoid confusing students
-NOREADING = 999 #just using 999 to represent no reading
-MAGNETIC_DECLINATION = 11 #i believe this is correct for Brisbane
-USEMUTEX = True #avoid threading issues using the IMU sensorm might need to use this for thermal sensor
-ENABLED = False #this can be used to turn on or off the brickpi
+MAGNETIC_DECLINATION = 11 #set for areas
+USEMUTEX = True #avoid threading issues
 
 class SensorStatus(Enum):
     ENABLED = 1
-    DISABLED = 5
+    DISABLED = 5 #number of attempts before disabled
+    NOREADING = 999 #just using 999 to represent no reading
 
 #Created a Class to wrap the robot functionality, one of the features is the idea of keeping track of the CurrentCommand, this is important when more than one process is running...
 class BrickPiInterface():
@@ -158,7 +156,7 @@ class BrickPiInterface():
 
     #returns the compass value from the IMU sensor - note if the IMU is placed near a motor it can be affected -SEEMS TO RETURN A VALUE BETWEEN -180 and 180. 
     def get_compass_IMU(self):
-        heading = NOREADING
+        heading = SensorStatus.NOREADING
         if self.config['imu'] >= SensorStatus.DISABLED or not self.Configured:
             return heading
         ifMutexAcquire(USEMUTEX)
@@ -181,7 +179,7 @@ class BrickPiInterface():
 
     #returns the absolute orientation value using euler rotations, I think this is calilbrated from the compass sensor and therefore requires calibration
     def get_orientation_IMU(self):
-        readings = (NOREADING,NOREADING,NOREADING)
+        readings = (SensorStatus.NOREADING,SensorStatus.NOREADING,SensorStatus.NOREADING)
         if self.config['imu'] >= SensorStatus.DISABLED or not self.Configured:
             return readings
         ifMutexAcquire(USEMUTEX)
@@ -198,7 +196,7 @@ class BrickPiInterface():
     
     #returns the acceleration from the IMU sensor - could be useful for detecting collisions or an involuntary stop
     def get_linear_acceleration_IMU(self):
-        readings = (NOREADING,NOREADING,NOREADING)
+        readings = (SensorStatus.NOREADING,SensorStatus.NOREADING,SensorStatus.NOREADING)
         if self.config['imu'] >= SensorStatus.DISABLED or not self.Configured:
             return readings
         ifMutexAcquire(USEMUTEX)
@@ -217,7 +215,7 @@ class BrickPiInterface():
 
     #get the gyro sensor angle/seconds acceleration from IMU sensor
     def get_gyro_sensor_IMU(self):
-        gyro_readings = (NOREADING,NOREADING,NOREADING)
+        gyro_readings = (SensorStatus.NOREADING,SensorStatus.NOREADING,SensorStatus.NOREADING)
         if self.config['imu'] >= SensorStatus.DISABLED or not self.Configured:
             return gyro_readings
         ifMutexAcquire(USEMUTEX)
@@ -234,7 +232,7 @@ class BrickPiInterface():
 
     #gets the temperature using the IMU sensor
     def get_temperature_IMU(self):
-        temp = NOREADING
+        temp = SensorStatus.NOREADING
         if self.config['imu'] >= SensorStatus.DISABLED or not self.Configured:
             return temp
         ifMutexAcquire(USEMUTEX)
@@ -251,7 +249,7 @@ class BrickPiInterface():
 
     #get the ultrasonic sensor
     def get_ultra_sensor(self):
-        distance = NOREADING
+        distance = SensorStatus.NOREADING
         if self.config['ultra'] >= SensorStatus.DISABLED or not self.Configured:
             return distance
         bp = self.BP
@@ -316,7 +314,7 @@ class BrickPiInterface():
 
     #return the infrared temperature - if usethread=True - it uses the thread set up in init
     def get_thermal_sensor(self, usethread=True):
-        temp = NOREADING
+        temp = SensorStatus.NOREADING
         if self.config['thermal'] >= SensorStatus.DISABLED or not self.Configured:
             return temp
         bp = self.BP
@@ -528,7 +526,13 @@ class BrickPiInterface():
         bp.reset_all() # Unconfigure the sensors, disable the motors
         time.sleep(2) #gives time to reset??
         return
-        
+
+#load the brickpi
+def load_brickpi(timelimit):
+    global BRICKPI
+    if not BRICKPI:
+        BRICKPI = BrickPiInterface(timelimit)
+    return
     
 #--------------------------------------------------------------------
 # Only execute if this is the main file, good for testing code

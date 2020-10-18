@@ -1,47 +1,37 @@
-#---PYTHON Libraries for import--------------------------------------
+#---PYTHON LIBRARIES FOR IMPORT--------------------------------------
 import uuid, sys, logging, math, time, os, re
-from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g 
-from interfaces import databaseinterface
-import helpers
+from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
+from interfaces.flaskdatabaseinterface import FlaskDatabase
 from datetime import datetime
+import globalvars
 
-#---SETTINGS and GLOBALS----------------------------------#
-DEBUG = True #sets the level of logging to high
-SECRET_KEY = 'my random key can be anything' #required to encrypt Sessions
-app = Flask(__name__) #Creates a handle for the Flask Web Server
-app.config.from_object(__name__) #Set app configuration using above SETTINGS
-app.config['jsonexamples'] = True
-app.config['brickpiexamples'] = False #will only work on Raspberry Pi with BrickPI
-app.config['grovepiexamples'] = True #will only work on Raspberry Pi with GrovePi
-app.config['emailexamples'] = False
-app.config['crossdomainscripting'] = False #allows the server to be accessed from another domain (API)
+#---CONFIGURE APP---------------------------------------------------#
+sys.tracebacklimit = 1 #Level of python traceback - useful for reducing error text
+app = Flask(__name__) #Creates the Flask Server Object
+#from flask import current_app as app can be used to access any of these variables
+app.config.from_object('config.Config')
+LOGGER = app.logger
 
-#--SET LOGGING--------------# log functions are available from helpers.py - import helpers to get logging
-helpers.set_log(app.logger) #call helpers.log to log info to console
-sys.tracebacklimit = 1 #Level of python traceback - This works well on Python Anywhere to cut down the traceback on errors!!
+globalvars.DATABASE = FlaskDatabase('test.sqlite', app.logger)
+DATABASE = globalvars.DATABASE
+#/home/nielbrad/mysite/test.sqlite
+#app.config['DATABASE'] = FlaskDatabase('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE!
 
-#---CONDITIONAL IMPORTS AND BLUEPRINTS TO ENABLED ADDITIONAL VIEWS---#
-# app.config is a dictionary of global flask variables that can be accessed by html templates
-if app.config['jsonexamples']:
+if app.config['JSON']:
     from blueprints.jsonblueprint import jsonblueprint
     app.register_blueprint(jsonblueprint)
-if app.config['brickpiexamples']:
+if app.config['BRICKPI']:
     from blueprints.brickpiblueprint import brickpiblueprint
     app.register_blueprint(brickpiblueprint)
-if app.config['grovepiexamples']:
+if app.config['GROVEPI']:
     from blueprints.grovepiblueprint import grovepiblueprint
     app.register_blueprint(grovepiblueprint)
-if app.config['emailexamples']:
+if app.config['EMAIL']:
     from interfaces import emailinterface # Needs flask_mail to be installed
     emailinterface.set_mail_server(app) #needs flask_email to be installed
-if app.config['crossdomainscripting']:
+if app.config['CROSSDOMAIN']:
     from flask_cors import CORS #Needs to be installed, allows cross-domain scripting
     CORS(app) #enables cross domain scripting protection
-
-#--SET UP DATABASE
-databaseinterface.set_location('test.sqlite') 
-#databaseinterface.set_location('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE!!!
-databaseinterface.set_log(app.logger) #set the logger inside the database
 
 #---HTTP REQUESTS / REQUEST HANDLERS-------------------------------#
 #Login page
@@ -53,10 +43,11 @@ def login():
         email = request.form['email']   #get the form field with the name 
         password = request.form['password']
         #Activity for students - Hash password to see if it matches database
-        userdetails = databaseinterface.ViewQuery("SELECT * FROM users WHERE email=? AND password=?",(email,password))
+        userdetails = DATABASE.ViewQuery("SELECT * FROM users WHERE email=? AND password=?",(email,password))
+        DATABASE.disconnect()
         if userdetails:
             row = userdetails[0] #userdetails is a list of dictionaries
-            helpers.update_access(row['userid']) #calls my custom helper function
+            update_access(row['userid']) #calls my custom helper function
             session['userid'] = row['userid']
             session['username'] = row['username']
             session['permission'] = row['permission']
@@ -77,7 +68,7 @@ def home():
 # admin page only available to admin - allows admin to update or delete
 @app.route('/admin', methods=['GET','POST'])
 def admin():
-    userdetails = databaseinterface.ViewQuery('SELECT * FROM users')
+    userdetails = DATABASE.ViewQuery('SELECT * FROM users')
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')
@@ -87,7 +78,8 @@ def admin():
         userids = request.form.getlist('delete') #getlist e.g checkboxes
         for userid in userids:
             if int(userid) > 1: #ensure that you can not delete the admin
-                databaseinterface.ModifyQuery('DELETE FROM users WHERE userid = ?',(int(userid),)) #a tuple needs atleast 1 comma
+                DATABASE.ModifyQuery('DELETE FROM users WHERE userid = ?',(int(userid),)) #a tuple needs atleast 1 comma
+        DATABASE.disconnect()
         return redirect('./admin')
     return render_template('admin.html', data=userdetails)
 
@@ -106,13 +98,14 @@ def register():
         #gender = request.form['gender'] #not in databaseinterface yet, uses drop down list
         location = request.form['location']
         email = request.form['email']
-        results = databaseinterface.ViewQuery('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
+        results = DATABASE.ViewQuery('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
         if results:
             flash("Your email or username is already in use.")
             return render_template('register.html')
         #TO DO hash password 
-        databaseinterface.ModifyQuery('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
+        DATABASE.ModifyQuery('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
         return redirect('./')
+        DATABASE.disconnect()
     return render_template('register.html')
 
 # Activity for students
@@ -150,6 +143,13 @@ def shutdown():
             return redirect('./')
     func = request.environ.get('werkzeug.server.shutdown')
     func()
+    return
+
+# update access
+def update_access(userid):
+    fmt = "%d/%m/%Y %H:%M:%S"
+    datenow = datetime.now().strftime(fmt)
+    DATABASE.ModifyQuery("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
     return
 #------------------------------------------------------------------#
 
