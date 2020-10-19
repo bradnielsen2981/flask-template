@@ -1,8 +1,12 @@
-import grovepi
-import time, math, sys, logging, threading
-from di_sensors.easy_mutex import ifMutexAcquire, ifMutexRelease 
-from di_sensors.temp_hum_press import TempHumPress
-import grove_rgb_lcd
+try:
+    import grovepi
+    from di_sensors.easy_mutex import ifMutexAcquire, ifMutexRelease 
+    from di_sensors.temp_hum_press import TempHumPress
+    import grove_rgb_lcd
+except ImportError:
+    pass #module not found
+import time, math, sys, logging
+
 
 class GrovePiInterface():
 

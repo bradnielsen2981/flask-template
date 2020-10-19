@@ -13,9 +13,9 @@ def sendurlrequest(url, dictofvalues):
         responsedata = response.read()
     return responsedata
 
-dictofvalues = {"data1":"WHY AM I HERE?"}
-url = "https://nielbrad.pythonanywhere.com/handleurlrequest"
-
-response = sendurlrequest(url, dictofvalues)
-#time.sleep(3)
-print(response)
+if __name__ == '__main__':
+    #send data to database
+    dictofvalues = {"hiveid":1,"temp":32.3,"hum":70}
+    url = "https://nielbrad.pythonanywhere.com/handleurlrequest"
+    response = sendurlrequest(url, dictofvalues)
+    print(response)

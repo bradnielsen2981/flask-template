@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+<h1>History</h1>
+<!-- The data that is sent back from the server is a List of Python Dictionaries -->
+{% if data %}
+    <table class="table">
+    <tr>
+        <!-- Get all the keys of the first python dictionary as column headings -->
+        {% for key in data[0].keys() %}
+            <th>{{key}}</th>
+        {% endfor %}
+            <th>delete</th>
+    </tr>
+        <!-- Print out each python dictionary into a html table row -->
+    {% for row in data %}
+    <tr>
+        {% for column in row.values() %}
+        <td>{{column}}</td>
+        {% endfor %}
+    </tr>
+    {%endfor%}
+    </table>
+{% endif %}
+</div>
+{% endblock %}

@@ -5,15 +5,16 @@ from datetime import datetime
 import time
 import globalvars
 
+#STUPID FOLDER STRUCTURE ISNT WORKING - templates folder?????
 grovepiblueprint = Blueprint('grovepiblueprint', __name__, template_folder='templates/grovepi', static_folder='static/grovepi')
 GROVEPI = globalvars.GROVEPI
 DATABASE = globalvars.DATABASE
+LOGGER = globalvars.LOGGER
 
 # homepage for the grovepi
 @grovepiblueprint.route('/grovepiexample', methods=['GET','POST'])
 def grovepiexample():
     enabled = (GROVEPI != None)
-    DATABASE.ViewQuery("SELECT * FROM users")
     return render_template('grovepi.html', grovepienabled=enabled)
 
 # loads the grovepi
@@ -39,6 +40,11 @@ def googlechart():
         flash("You need to load the grove pi!")
         return redirect('/grovepiexample')
     return render_template('googlechart.html', grovepienabled=enabled)
+
+@grovepiblueprint.route('/grovehistory', methods=['GET','POST'])
+def grovehistory():
+    data = DATABASE.ViewQuery("SELECT * FROM grovehistory")
+    return render_template('grovehistory.html', data=data)
 
 #----------------------------------------------------------------------#
 # use AJAX and JSON to get temperature without a page refresh

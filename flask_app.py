@@ -10,10 +10,8 @@ sys.tracebacklimit = 1 #Level of python traceback - useful for reducing error te
 app = Flask(__name__) #Creates the Flask Server Object
 #from flask import current_app as app can be used to access any of these variables
 app.config.from_object('config.Config')
-LOGGER = app.logger
-
-globalvars.DATABASE = Database('test.sqlite', app.logger)
-DATABASE = globalvars.DATABASE
+globalvars.LOGGER = app.logger; LOGGER = globalvars.LOGGER
+globalvars.DATABASE = Database('test.sqlite', app.logger); DATABASE = globalvars.DATABASE
 #/home/nielbrad/mysite/test.sqlite
 #app.config['DATABASE'] = FlaskDatabase('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE!
 
@@ -154,8 +152,12 @@ def update_access(userid):
 @app.route('/handleurlrequest', methods=['GET','POST'])
 def handleurlrequest():
     if request.method == "POST":
-        data1 = request.form['data1']
-        message = "Received data:" + data1
+        hiveid = request.form['hiveid']
+        temp = request.form['temp']
+        hum = request.form['hum']
+        dt = datetime.now()
+        DATABASE.ModifyQuery("INSERT INTO history (hiveid, temp, hum, datetime) VALUES (?,?,?,?)",(hiveid, temp, hum, dt))
+        message = "Received data from " + str(hiveid) + " on " + str(dt.today)
         LOGGER.info(message)
     return jsonify({"message":message})
 
