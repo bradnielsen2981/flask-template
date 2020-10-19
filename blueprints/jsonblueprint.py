@@ -34,7 +34,6 @@ def getactiveusers():
         helpers.update_access(session['userid']) #calls my custom helper function
     fmt = "%d/%m/%Y %H:%M:%S"
     users = DATABASE.ViewQuery("SELECT username, lastaccess from users")
-    DATABASE.disconnect() #need to keep disconnecting 
     activeusers = [] #blank list
     for user in users:
         if user['lastaccess']:

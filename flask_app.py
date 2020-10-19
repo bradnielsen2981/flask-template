@@ -1,7 +1,7 @@
 #---PYTHON LIBRARIES FOR IMPORT--------------------------------------
 import uuid, sys, logging, math, time, os, re
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
-from interfaces.flaskdatabaseinterface import FlaskDatabase
+from interfaces.databaseinterface import Database
 from datetime import datetime
 import globalvars
 
@@ -12,7 +12,7 @@ app = Flask(__name__) #Creates the Flask Server Object
 app.config.from_object('config.Config')
 LOGGER = app.logger
 
-globalvars.DATABASE = FlaskDatabase('test.sqlite', app.logger)
+globalvars.DATABASE = Database('test.sqlite', app.logger)
 DATABASE = globalvars.DATABASE
 #/home/nielbrad/mysite/test.sqlite
 #app.config['DATABASE'] = FlaskDatabase('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE!
@@ -44,7 +44,6 @@ def login():
         password = request.form['password']
         #Activity for students - Hash password to see if it matches database
         userdetails = DATABASE.ViewQuery("SELECT * FROM users WHERE email=? AND password=?",(email,password))
-        DATABASE.disconnect()
         if userdetails:
             row = userdetails[0] #userdetails is a list of dictionaries
             update_access(row['userid']) #calls my custom helper function
@@ -79,7 +78,6 @@ def admin():
         for userid in userids:
             if int(userid) > 1: #ensure that you can not delete the admin
                 DATABASE.ModifyQuery('DELETE FROM users WHERE userid = ?',(int(userid),)) #a tuple needs atleast 1 comma
-        DATABASE.disconnect()
         return redirect('./admin')
     return render_template('admin.html', data=userdetails)
 
@@ -105,7 +103,6 @@ def register():
         #TO DO hash password 
         DATABASE.ModifyQuery('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
         return redirect('./')
-        DATABASE.disconnect()
     return render_template('register.html')
 
 # Activity for students

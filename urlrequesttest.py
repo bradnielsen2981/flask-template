@@ -19,6 +19,3 @@ url = "https://nielbrad.pythonanywhere.com/handleurlrequest"
 response = sendurlrequest(url, dictofvalues)
 #time.sleep(3)
 print(response)
-
-#ANOTHER CHANGE
-print("THis changed")
