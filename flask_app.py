@@ -150,6 +150,15 @@ def update_access(userid):
     return
 #------------------------------------------------------------------#
 
+#GET DATA FROM CLIENT - RESIDES ON PYTHON ANYWHERE FLASK SERVER
+@app.route('/handleurlrequest', methods=['GET','POST'])
+def handleurlrequest():
+    if request.method == "POST":
+        data1 = request.form['data1']
+        message = "Received data:" + data1
+        LOGGER.info(message)
+    return jsonify({"message":message})
+
 #main method called web server application
 if __name__ == '__main__':
     #app.run() #PYTHON ANYTWHERE!!! will decide the port
