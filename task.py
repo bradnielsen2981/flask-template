@@ -1,7 +1,8 @@
 import grovepi
 import time
-import interfaces.grove_rgb_lcd
-import interfaces.databaseinterface
+from interfaces import grove_rgb_lcd
+from interfaces.databaseinterface import Database
+import urlrequest
 
 ENABLED = True
 grovepilightswitch = False
@@ -31,6 +32,17 @@ def read_temp_humidity_sensor_digitalport(port):
         print("Error in reading the temp and humidity sensor")
     return temp_humidity_list
 
+# Read sound sensor
+def read_sound_analogueport(port):
+    if not ENABLED:
+        return -1
+    sound = None
+    try:
+        sound = grovepi.analogRead(port)
+    except IOError: #this doesnt appear to work
+        print("Error in reading sound sensor")
+    return sound
+
 # this function might need to run for a period of time
 def output_RGB(colour, message):   #colour is a tuple of (255,255,255)
     if not ENABLED:
@@ -41,6 +53,15 @@ def output_RGB(colour, message):   #colour is a tuple of (255,255,255)
 
 #only execute the below block if this is the execution point
 if __name__ == '__main__':
-    interfaces.databaseinterface.set_location = "test.sql"
-    results = ViewQuery("SELECT * FROM users")
-    print(results)
+    switch_led_digitalport_value(2)
+    sound = read_sound_analogueport(1)
+    print("SOUND: " + str(sound))
+    [temp,hum] = read_temp_humidity_sensor_digitalport(4)
+    time.sleep(0.1) #there is a delay for sensor values
+    print("TEMP: " + str(temp))
+    print("HUMIDITY: " + str(hum))
+
+    dictofvalues = {"hiveid":1,"temp":temp,"hum":hum,"sound":sound}
+    url = "https://nielbrad.pythonanywhere.com/handleurlrequest"
+    response = urlrequest.sendurlrequest(url, dictofvalues)
+    print(response)

@@ -50,7 +50,7 @@ def login():
             session['permission'] = row['permission']
             return redirect('./home')
         else:
-            log("Login failed for " + str(email) + " from " + str(get_user_ip()))
+            LOGGER.error("Login failed for " + str(email) + " from " + str(get_user_ip()))
             flash("Sorry no user found, password or email incorrect") #flash will send messages to the screen
     return render_template('login.html')
 
