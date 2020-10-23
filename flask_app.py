@@ -148,6 +148,12 @@ def update_access(userid):
     return
 #------------------------------------------------------------------#
 
+
+@app.route('/grovehistory', methods=['GET','POST'])
+def grovehistory():
+    data = DATABASE.ViewQuery("SELECT * FROM grovehistory")
+    return render_template('grovehistory.html', data=data)
+
 #GET DATA FROM CLIENT - RESIDES ON PYTHON ANYWHERE FLASK SERVER
 @app.route('/handleurlrequest', methods=['GET','POST'])
 def handleurlrequest():
@@ -155,9 +161,10 @@ def handleurlrequest():
         hiveid = request.form['hiveid']
         temp = request.form['temp']
         hum = request.form['hum']
+        sound = request.form['sound']
         dt = datetime.now()
-        DATABASE.ModifyQuery("INSERT INTO history (hiveid, temp, hum, datetime) VALUES (?,?,?,?)",(hiveid, temp, hum, dt))
-        message = "Received data from " + str(hiveid) + " on " + str(dt.today)
+        DATABASE.ModifyQuery("INSERT INTO grovehistory (hiveid, temp, hum, sound, datetime) VALUES (?,?,?,?,?)",(hiveid, temp, hum, sound, dt))
+        message = "Received data from " + str(hiveid)
         LOGGER.info(message)
     return jsonify({"message":message})
 
