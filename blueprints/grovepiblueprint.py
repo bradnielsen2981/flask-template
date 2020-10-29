@@ -43,7 +43,8 @@ def googlechart():
 
 @grovepiblueprint.route('/grovehistory', methods=['GET','POST'])
 def grovehistory():
-    data = DATABASE.ViewQuery("SELECT * FROM grovehistory")
+    data = globalvars.DATABASE.ViewQuery("SELECT * FROM grovehistory")
+    LOGGER.info(data)
     return render_template('grovehistory.html', data=data)
 
 #----------------------------------------------------------------------#

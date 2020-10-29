@@ -6,16 +6,14 @@ from datetime import datetime
 import globalvars
 
 #---CONFIGURE APP---------------------------------------------------#
-sys.tracebacklimit = 1 #Level of python traceback - useful for reducing error text
+sys.tracebacklimit = 1 #Level of python traceback - reduces error text
 app = Flask(__name__) #Creates the Flask Server Object
-#from flask import current_app as app can be used to access any of these variables
 app.config.from_object('config.Config')
 globalvars.LOGGER = app.logger 
 LOGGER = globalvars.LOGGER
 globalvars.DATABASE = Database('test.sqlite', app.logger) 
 DATABASE = globalvars.DATABASE
-#/home/nielbrad/mysite/test.sqlite
-#app.config['DATABASE'] = FlaskDatabase('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE!
+#app.config['DATABASE'] = FlaskDatabase('/home/nielbrad/mysite/test.sqlite') #FOR PYTHON ANYWHERE SERVER!
 
 if app.config['JSON']:
     from blueprints.jsonblueprint import jsonblueprint
@@ -31,7 +29,7 @@ if app.config['EMAIL']:
     emailinterface.set_mail_server(app) #needs flask_email to be installed
 if app.config['CROSSDOMAIN']:
     try:
-        from flask_cors import CORS #Needs to be installed, allows cross-domain scripting
+        from flask_cors import CORS #allows cross-domain scripting
         CORS(app) #enables cross domain scripting protection
     except ImportError:
         LOGGER.error("You need to install Flask-CORS")
@@ -170,7 +168,6 @@ def handleurlrequest():
         dt = datetime.now()
         DATABASE.ModifyQuery("INSERT INTO grovehistory (hiveid, temp, hum, sound, datetime) VALUES (?,?,?,?,?)",(hiveid, temp, hum, sound, dt))
         message = "Received data from " + str(hiveid)
-        LOGGER.info(message)
     return jsonify({"message":message})
 
 #main method called web server application

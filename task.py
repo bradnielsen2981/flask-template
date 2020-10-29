@@ -62,6 +62,7 @@ if __name__ == '__main__':
     print("HUMIDITY: " + str(hum))
 
     dictofvalues = {"hiveid":1,"temp":temp,"hum":hum,"sound":sound}
-    url = "https://nielbrad.pythonanywhere.com/handleurlrequest"
+    #url = "https://nielbrad.pythonanywhere.com/handleurlrequest"
+    url = "http://0.0.0.0:5000/handleurlrequest" #if server is running locally
     response = urlrequest.sendurlrequest(url, dictofvalues)
     print(response)
