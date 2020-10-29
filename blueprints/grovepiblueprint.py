@@ -14,29 +14,29 @@ LOGGER = globalvars.LOGGER
 # homepage for the grovepi
 @grovepiblueprint.route('/grovepiexample', methods=['GET','POST'])
 def grovepiexample():
-    enabled = (GROVEPI != None)
+    enabled = (globalvars.GROVEPI != None)
     return render_template('grovepi.html', grovepienabled=enabled)
 
 # loads the grovepi
 @grovepiblueprint.route('/loadgrovepi', methods=['GET','POST'])
 def grovepiload():
-    if not GROVEPI:
-        GROVEPI = GrovePiInterface(timelimit=20) 
-        LOGGING.info("loaded grovepi")
+    if not globalvars.GROVEPI:
+        globalvars.GROVEPI = GrovePiInterface(timelimit=20) 
+        LOGGER.info("loaded grovepi")
     return redirect('/grovepiexample')
 
 # shuts down the grove pi
 @grovepiblueprint.route('/shutdowngrovepi', methods=['GET','POST'])
 def grovepishutdown():
-    GROVEPI = None
-    LOGGING.info("shutdown grovepi")
+    globalvars.GROVEPI = None
+    LOGGER.info("shutdown grovepi")
     return redirect('/grovepiexample')
 
 # homepage for the grovepi
 @grovepiblueprint.route('/googlechart', methods=['GET','POST'])
 def googlechart():
-    enabled = (GROVEPI != None)
-    if not GROVEPI:
+    enabled = (globalvars.GROVEPI != None)
+    if not globalvars.GROVEPI:
         flash("You need to load the grove pi!")
         return redirect('/grovepiexample')
     return render_template('googlechart.html', grovepienabled=enabled)
@@ -51,22 +51,23 @@ def grovehistory():
 # gets the temperature
 @grovepiblueprint.route('/lightswitch', methods=['GET','POST'])
 def lightswitch():
-    if GROVEPI:
-        if GROVEPI.Configured:
-            GROVEPI.switch_led_digitalport_value(2,255)
+    if globalvars.GROVEPI:
+        if globalvars.GROVEPI.Configured:
+            globalvars.GROVEPI.switch_led_digitalport_value(2,255)
     return jsonify({'message':'Switch light'})
 
 @grovepiblueprint.route('/gettemperaturehumidity', methods=['GET','POST'])
 def gettemperaturehumidity():
-    if GROVEPI:
-        if GROVEPI.Configured:
-            sensorlist = GROVEPI.read_temp_humidity_sensor_digitalport(3)
+    if globalvars.GROVEPI:
+        if globalvars.GROVEPI.Configured:
+            sensorlist = globalvars.GROVEPI.read_temp_humidity_sensor_digitalport(3)
     return jsonify({'temperature':sensorlist[0],'humidity':sensorlist[1]})
 
+#This code is triggered by a recurring AJAX function on client
 @grovepiblueprint.route('/getlight', methods=['GET','POST'])
 def getlight():
     light = 0
-    if GROVEPI:
-        if GROVEPI.Configured:
-            light = GROVEPI.read_light_sensor_analogueport(2)
+    if globalvars.GROVEPI:
+        if globalvars.GROVEPI.Configured:
+            light = globalvars.GROVEPI.read_light_sensor_analogueport(2)
     return jsonify({'light':light})

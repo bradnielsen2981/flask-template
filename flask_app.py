@@ -10,8 +10,10 @@ sys.tracebacklimit = 1 #Level of python traceback - useful for reducing error te
 app = Flask(__name__) #Creates the Flask Server Object
 #from flask import current_app as app can be used to access any of these variables
 app.config.from_object('config.Config')
-globalvars.LOGGER = app.logger; LOGGER = globalvars.LOGGER
-globalvars.DATABASE = Database('test.sqlite', app.logger); DATABASE = globalvars.DATABASE
+globalvars.LOGGER = app.logger 
+LOGGER = globalvars.LOGGER
+globalvars.DATABASE = Database('test.sqlite', app.logger) 
+DATABASE = globalvars.DATABASE
 #/home/nielbrad/mysite/test.sqlite
 #app.config['DATABASE'] = FlaskDatabase('/home/nielbrad/mysite/test.sqlite') #PYTHON ANYWHERE!
 
@@ -28,8 +30,11 @@ if app.config['EMAIL']:
     from interfaces import emailinterface # Needs flask_mail to be installed
     emailinterface.set_mail_server(app) #needs flask_email to be installed
 if app.config['CROSSDOMAIN']:
-    from flask_cors import CORS #Needs to be installed, allows cross-domain scripting
-    CORS(app) #enables cross domain scripting protection
+    try:
+        from flask_cors import CORS #Needs to be installed, allows cross-domain scripting
+        CORS(app) #enables cross domain scripting protection
+    except ImportError:
+        LOGGER.error("You need to install Flask-CORS")
 
 #---HTTP REQUESTS / REQUEST HANDLERS-------------------------------#
 #Login page

@@ -52,14 +52,13 @@ class GrovePiInterface():
     def switch_led_digitalport_value(self, port, value):
         if not self.Configured:
             return -1
-        global GROVEPILIGHTSWITCH 
         grovepi.pinMode(port,"OUTPUT") #should be in initialise
-        if GROVEPILIGHTSWITCH:
+        if self.lightswitch:
             grovepi.digitalWrite(port,0)
-            GROVEPILIGHTSWITCH = False
+            self.lightswitch = False
         else:
             grovepi.digitalWrite(port,value)
-            GROVEPILIGHTSWITCH = True
+            self.lightswitch = True
         return
 
     # Read temp and humidity
