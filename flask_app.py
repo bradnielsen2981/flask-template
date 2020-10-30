@@ -141,7 +141,7 @@ def shutdown():
             return redirect('./')
     func = request.environ.get('werkzeug.server.shutdown')
     func()
-    return
+    return "Exiting"
 
 # update access
 def update_access(userid):
@@ -149,26 +149,7 @@ def update_access(userid):
     datenow = datetime.now().strftime(fmt)
     DATABASE.ModifyQuery("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
     return
-#------------------------------------------------------------------#
 
-
-@app.route('/grovehistory', methods=['GET','POST'])
-def grovehistory():
-    data = DATABASE.ViewQuery("SELECT * FROM grovehistory")
-    return render_template('grovehistory.html', data=data)
-
-#GET DATA FROM CLIENT - RESIDES ON PYTHON ANYWHERE FLASK SERVER
-@app.route('/handleurlrequest', methods=['GET','POST'])
-def handleurlrequest():
-    if request.method == "POST":
-        hiveid = request.form['hiveid']
-        temp = request.form['temp']
-        hum = request.form['hum']
-        sound = request.form['sound']
-        dt = datetime.now()
-        DATABASE.ModifyQuery("INSERT INTO grovehistory (hiveid, temp, hum, sound, datetime) VALUES (?,?,?,?,?)",(hiveid, temp, hum, sound, dt))
-        message = "Received data from " + str(hiveid)
-    return jsonify({"message":message})
 
 #main method called web server application
 if __name__ == '__main__':

@@ -32,6 +32,27 @@ def grovepishutdown():
     LOGGER.info("shutdown grovepi")
     return redirect('/grovepiexample')
 
+@grovepiblueprint.route('/grovehistory', methods=['GET','POST'])
+def grovehistory():
+    data = DATABASE.ViewQuery("SELECT * FROM grovehistory")
+    return render_template('grovehistory.html', data=data)
+
+#GET DATA FROM CLIENT - RESIDES ON PYTHON ANYWHERE FLASK SERVER
+@grovepiblueprint.route('/handleurlrequest', methods=['GET','POST'])
+def handleurlrequest():
+    if request.method == "POST":
+        hiveid = request.form['hiveid']
+        temp = request.form['temp']
+        hum = request.form['hum']
+        sound = request.form['sound']
+        dt = datetime.now()
+        DATABASE.ModifyQuery("INSERT INTO grovehistory (hiveid, temp, hum, sound, datetime) VALUES (?,?,?,?,?)",(hiveid, temp, hum, sound, dt))
+        message = "Received data from " + str(hiveid)
+    return jsonify({"message":message})
+
+#RASPERRY PI LOCAL WEB SERVER FUNCTIONS------------------------------------#
+# use AJAX and JSON to get temperature without a page refresh
+# gets the temperature
 # homepage for the grovepi
 @grovepiblueprint.route('/googlechart', methods=['GET','POST'])
 def googlechart():
@@ -41,15 +62,6 @@ def googlechart():
         return redirect('/grovepiexample')
     return render_template('googlechart.html', grovepienabled=enabled)
 
-@grovepiblueprint.route('/grovehistory', methods=['GET','POST'])
-def grovehistory():
-    data = globalvars.DATABASE.ViewQuery("SELECT * FROM grovehistory")
-    LOGGER.info(data)
-    return render_template('grovehistory.html', data=data)
-
-#----------------------------------------------------------------------#
-# use AJAX and JSON to get temperature without a page refresh
-# gets the temperature
 @grovepiblueprint.route('/lightswitch', methods=['GET','POST'])
 def lightswitch():
     if globalvars.GROVEPI:
@@ -72,3 +84,14 @@ def getlight():
         if globalvars.GROVEPI.Configured:
             light = globalvars.GROVEPI.read_light_sensor_analogueport(2)
     return jsonify({'light':light})
+
+@grovepiblueprint.route('/grovepilcd', methods=['GET','POST'])
+def grovepilcd():
+    message = request.form['grovelcdmessage']
+    if globalvars.GROVEPI:
+        if globalvars.GROVEPI.Configured:
+            colour = (255,0,255)
+            globalvars.GROVEPI.output_RGB(colour,message)
+    return redirect(url_for('grovepiblueprint.grovepiexample'))
+
+#------------------------------------------------------------------#

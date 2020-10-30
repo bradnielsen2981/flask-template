@@ -5,6 +5,9 @@
 	<p>You have logged in as: <b>{{session['username']}}</b></p>
 	<p>The following session variables have been saved: <b>{{session}}</b></p>
 	<p>This is a python dictionary, you can access values using the keys. When you log out the session variables are destroyed.</p>
+	<form action="/shutdown" method="GET">
+		<input type="submit" class="btn btn-danger" value="Shutdown Web Server"/>
+	</form>
 </div>
 {% endblock %}
 {% block scripts %}

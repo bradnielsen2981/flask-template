@@ -53,7 +53,6 @@ def output_RGB(colour, message):   #colour is a tuple of (255,255,255)
 
 #only execute the below block if this is the execution point
 if __name__ == '__main__':
-    switch_led_digitalport_value(2)
     sound = read_sound_analogueport(1)
     print("SOUND: " + str(sound))
     [temp,hum] = read_temp_humidity_sensor_digitalport(4)

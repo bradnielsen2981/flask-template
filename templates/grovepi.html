@@ -27,8 +27,10 @@
 	<br/>
 	<div class="row">
 		<div class="col-12">
-		<button type="button" class="btn btn-danger" onclick="JSONrequest('/grovepilcd','POST')">GrovePi LCD</button>
-		<input type="text" class="form-control"></input>
+		<form action="/grovepilcd" method="POST">
+		<button type="submit" class="btn btn-danger">GrovePi LCD</button>
+		<input type="text" class="form-control" name="grovelcdmessage" cols="20"></input>
+		</form>
 		</div>
 	</div>
 	{% endif %}

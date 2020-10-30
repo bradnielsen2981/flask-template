@@ -104,4 +104,3 @@ if __name__ == '__main__':
     colour = (0,128,64)
     message = "this is working"
     grove.output_RGB(colour,message)
-    print(grove.read_light_sensor_analogueport(2))
