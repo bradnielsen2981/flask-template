@@ -4,7 +4,8 @@ try:
     from di_sensors.inertial_measurement_unit import InertialMeasurementUnit
     from di_sensors.temp_hum_press import TempHumPress
 except ImportError:
-    pass #module not found
+    print("BrickPi not installed") #module not found
+    sys.exit() #exit
 import time, math, sys, logging, threading
 
 from enum import Enum
@@ -38,12 +39,12 @@ class BrickPiInterface():
     #--- Initialise Ports --------#
     def set_ports(self):
         bp = self.BP
-        self.rightmotor = bp.PORT_A
-        self.leftmotor = bp.PORT_B
-        self.largemotors = bp.PORT_A + bp.PORT_B
-        self.mediummotor = bp.PORT_C
-        self.thermal = bp.PORT_1 #Thermal infrared Sensor
-        self.colour = bp.PORT_2 #Colour Sensor
+        self.rightmotor = bp.PORT_B
+        self.leftmotor = bp.PORT_C
+        self.largemotors = bp.PORT_B + bp.PORT_C
+        self.mediummotor = bp.PORT_A
+        self.thermal = bp.PORT_2 #Thermal infrared Sensor
+        self.colour = bp.PORT_1 #Colour Sensor
         self.ultra = bp.PORT_4 #ultraSonic Sensor
         self.claw_closed = True #Current state of the claw
         self.thermal_thread = None #DO NOT REMOVE THIS - USED LATER
@@ -545,6 +546,6 @@ if __name__ == '__main__':
     logger = logging.getLogger()
     logger.setLevel(logging.info)
     robot.set_log(logger)
-    robot.calibrate_imu(timelimit=10) #calibration might requirement movement
     input("Press any key to test: ")
+    robot.move_power_time(50, 1, deviation=0)
     robot.safe_exit()
