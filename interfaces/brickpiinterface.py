@@ -13,7 +13,7 @@ from enum import Enum
 MAGNETIC_DECLINATION = 11 #set for areas
 USEMUTEX = True #avoid threading issues
 
-class SensorStatus(Enum):
+class SensorStatus():
     ENABLED = 1
     DISABLED = 5 #number of attempts before disabled
     NOREADING = 999 #just using 999 to represent no reading
@@ -42,7 +42,7 @@ class BrickPiInterface():
         self.rightmotor = bp.PORT_B
         self.leftmotor = bp.PORT_C
         self.largemotors = bp.PORT_B + bp.PORT_C
-        self.mediummotor = bp.PORT_A
+        self.mediummotor = bp.PORT_D
         self.thermal = bp.PORT_2 #Thermal infrared Sensor
         self.colour = bp.PORT_1 #Colour Sensor
         self.ultra = bp.PORT_4 #ultraSonic Sensor
@@ -79,7 +79,7 @@ class BrickPiInterface():
             self.__start_thermal_infrared_thread()
         except Exception as error:
             self.log("Thermal Sensor not found")
-            self.config['thermal'] = SensorStatus.DISABLED 
+            self.config['thermal'] = SensorStatus.DISABLED
         #set up imu      
         try:
             self.imu = InertialMeasurementUnit()
@@ -446,10 +446,10 @@ class BrickPiInterface():
         elapsedtime = time.time() - starttime
         return elapsedtime
 
-    #moves the target class to the target degrees
-    def move_claw_targetdegrees(self, degrees):
-        self.CurrentCommand = "move_claw_targetdegrees"
-        degrees = -degrees #reversing 
+    #spins the medium motor - this can be used for shooter or claw
+    def spin_medium_motor(self, degrees):
+        self.CurrentCommand = "move_medium_motor"
+        degrees = -degrees #if negative -> reverse motor
         bp = self.BP
         if degrees == 0:
             return
@@ -485,24 +485,6 @@ class BrickPiInterface():
         self.CurrentCommand = "stop"
         return
         
-    #open the claw
-    def open_claw(self, degrees=-1200):
-        self.CurrentCommand = 'open claw'
-        if self.claw_closed == True:
-            self.move_claw_targetdegrees(degrees)
-            self.claw_closed = False
-            self.CurrentCommand = 'stop'
-        return
-
-    #close the claw
-    def close_claw(self, degrees=1200):
-        self.CurrentCommand = 'close claw'
-        if self.claw_closed == False:
-            self.move_claw_targetdegrees(degrees)
-            self.claw_closed = True   
-            self.CurrentCommand = 'stop'
-        return
-
     #returns the current command
     def get_current_command(self):
         return self.CurrentCommand
@@ -544,8 +526,10 @@ def load_brickpi(timelimit):
 if __name__ == '__main__':
     robot = BrickPiInterface(timelimit=20)
     logger = logging.getLogger()
-    logger.setLevel(logging.info)
     robot.set_log(logger)
     input("Press any key to test: ")
-    robot.move_power_time(50, 1, deviation=0)
+    #robot.move_power_time(50, 1, deviation=0)
+    robot.rotate_power_time(-30, 0.5)
+    robot.spin_medium_motor(200)
+    print(robot.get_all_sensors())
     robot.safe_exit()
