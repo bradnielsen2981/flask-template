@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+	<h1>BrickPi Example</h1>
+	<div class="row">
+		<button id="loadbrickpibutton" type="button" class="btn btn-success" onclick="JSONrequest('brickpiload','POST', brickpiloadedhandler)">Load BrickPi</button>
+	</div>
+	<div id="stats" class="row"> <!-- recurring function - use json to fetch the voltage, currentcommand and current routine -->
+    </div>
+	<div id="dashboard">
+	<div class="row text-center fitrow">
+		<div class="col-4">
+		<button type="button" class="btn btn-success" onclick="JSONrequest('brickpi/start','POST')">Start</button>
+		</div>
+		<div class="col-4">
+		<button type="button" class="btn btn-danger" onclick="JSONrequest('brickpi/stop','POST')">Stop</button>
+		</div>
+		<div class="col-4">
+		<button type="button" class="btn btn-dark" onclick="JSONrequest('brickpi/brickpishutdown','POST')"">Shutdown Robot</button>
+		</div>
+	</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% if robotenabled %}
+<script> robotenabled = true;</script>
+{% else %}
+<script> robotenabled = false;</script>
+{% endif %}
+<script src="static/brickpirequesthandlers.js"></script>
+
+{% endblock %}

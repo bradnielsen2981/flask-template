@@ -1,40 +1,43 @@
 #---PYTHON LIBRARIES FOR IMPORT--------------------------------------
 import uuid, sys, logging, math, time, os, re
-from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
+from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify
 from interfaces.databaseinterface import Database
 from datetime import datetime
+import helpers
 import globalvars
 
 #---CONFIGURE APP---------------------------------------------------#
-sys.tracebacklimit = 1 #Level of python traceback - reduces error text
+#sys.tracebacklimit = 1 #Level of python traceback - reduces error text in python anywhere
 app = Flask(__name__) #Creates the Flask Server Object
 app.config.from_object('config.Config')
-globalvars.LOGGER = app.logger 
-LOGGER = globalvars.LOGGER
+globalvars.LOGGER = app.logger #set the log to Flask's default logger
 globalvars.DATABASE = Database('test.sqlite', app.logger) 
-DATABASE = globalvars.DATABASE
-#app.config['DATABASE'] = FlaskDatabase('/home/nielbrad/mysite/test.sqlite') #FOR PYTHON ANYWHERE SERVER!
 
+#---REGISTER BLUEPRINTS FOR ADDITIONAL FLASK VIEWS AND OTHER CONDITIONAL IMPORTS -------------#
 if app.config['JSON']:
-    from blueprints.jsonblueprint import jsonblueprint
-    app.register_blueprint(jsonblueprint)
+    from jsondemo.jsonblueprint import jsonblueprint
+    app.register_blueprint(jsonblueprint, url_prefix='/json')
 if app.config['BRICKPI']:
-    from blueprints.brickpiblueprint import brickpiblueprint
-    app.register_blueprint(brickpiblueprint)
+    from brickpiflask.brickpiblueprint import brickpiblueprint
+    app.register_blueprint(brickpiblueprint, url_prefix='/brickpi')
 if app.config['GROVEPI']:
-    from blueprints.grovepiblueprint import grovepiblueprint
-    app.register_blueprint(grovepiblueprint)
+    from grovepiflask.grovepiblueprint import grovepiblueprint
+    app.register_blueprint(grovepiblueprint, url_prefix='/grovepi')
 if app.config['EMAIL']:
-    from interfaces import emailinterface # Needs flask_mail to be installed
-    emailinterface.set_mail_server(app) #needs flask_email to be installed
+    try:
+        from interfaces import emailinterface # Needs flask_mail to be installed
+        emailinterface.set_mail_server(app) #needs flask_email to be installed
+    except ImportError:
+        globalvars.LOGGER.error("You need to install Flask-mail")
 if app.config['CROSSDOMAIN']:
     try:
         from flask_cors import CORS #allows cross-domain scripting
         CORS(app) #enables cross domain scripting protection
     except ImportError:
-        LOGGER.error("You need to install Flask-CORS")
+        globalvars.LOGGER.error("You need to install Flask-CORS")
 
-#---HTTP REQUESTS / REQUEST HANDLERS-------------------------------#
+#-------------------------------------------------------------------#
+# HTTP REQUESTS / REQUEST HANDLERS
 #Login page
 @app.route('/', methods=['GET','POST'])
 def login():
@@ -44,16 +47,16 @@ def login():
         email = request.form['email']   #get the form field with the name 
         password = request.form['password']
         #Activity for students - Hash password to see if it matches database
-        userdetails = DATABASE.ViewQuery("SELECT * FROM users WHERE email=? AND password=?",(email,password))
+        userdetails = globalvars.DATABASE.ViewQuery("SELECT * FROM users WHERE email=? AND password=?",(email,password))
         if userdetails:
             row = userdetails[0] #userdetails is a list of dictionaries
-            update_access(row['userid']) #calls my custom helper function
+            helpers.update_access(row['userid']) #calls my custom helper function
             session['userid'] = row['userid']
             session['username'] = row['username']
             session['permission'] = row['permission']
             return redirect('./home')
         else:
-            LOGGER.error("Login failed for " + str(email) + " from " + str(get_user_ip()))
+            globalvars.LOGGER.error("Login failed for " + str(email) + " from " + str(get_user_ip()))
             flash("Sorry no user found, password or email incorrect") #flash will send messages to the screen
     return render_template('login.html')
 
@@ -68,7 +71,7 @@ def home():
 # admin page only available to admin - allows admin to update or delete
 @app.route('/admin', methods=['GET','POST'])
 def admin():
-    userdetails = DATABASE.ViewQuery('SELECT * FROM users')
+    userdetails = globalvars.DATABASE.ViewQuery('SELECT * FROM users')
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')
@@ -78,7 +81,7 @@ def admin():
         userids = request.form.getlist('delete') #getlist e.g checkboxes
         for userid in userids:
             if int(userid) > 1: #ensure that you can not delete the admin
-                DATABASE.ModifyQuery('DELETE FROM users WHERE userid = ?',(int(userid),)) #a tuple needs atleast 1 comma
+                globalvars.DATABASE.ModifyQuery('DELETE FROM users WHERE userid = ?',(int(userid),)) #a tuple needs atleast 1 comma
         return redirect('./admin')
     return render_template('admin.html', data=userdetails)
 
@@ -97,12 +100,12 @@ def register():
         #gender = request.form['gender'] #not in databaseinterface yet, uses drop down list
         location = request.form['location']
         email = request.form['email']
-        results = DATABASE.ViewQuery('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
+        results = globalvars.DATABASE.ViewQuery('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
         if results:
             flash("Your email or username is already in use.")
             return render_template('register.html')
         #TO DO hash password 
-        DATABASE.ModifyQuery('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
+        globalvars.DATABASE.ModifyQuery('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
         return redirect('./')
     return render_template('register.html')
 
@@ -142,13 +145,6 @@ def shutdown():
     func = request.environ.get('werkzeug.server.shutdown')
     func()
     return "Exiting"
-
-# update access
-def update_access(userid):
-    fmt = "%d/%m/%Y %H:%M:%S"
-    datenow = datetime.now().strftime(fmt)
-    DATABASE.ModifyQuery("UPDATE users SET lastaccess = ?, active = 1 where userid = ?",(datenow, userid))
-    return
 
 
 #main method called web server application

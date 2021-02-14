@@ -1,4 +1,5 @@
 import hashlib, socket
+from flask import current_app #imports globals from request
 import uuid, sys, logging, math, time, os, re
 from datetime import datetime
 import globalvars
@@ -30,7 +31,7 @@ def get_ip():
 
 # get the ip address of the client who made the request
 def get_user_ip():
-    return request.remote_addr
+    return current_app.request.remote_addr
 
 # get the mac address of the current computer
 def get_macaddress():
@@ -39,11 +40,11 @@ def get_macaddress():
 #--LOGGING HELPERS-----------------#
 #Log a message
 def log(message):
-    LOGGER.info(message)
+    globalvars.LOGGER.info(message)
     return
 
 def log_error(error):
-    LOGGER.error(error)
+    globalvars.LOGGER.error(error)
     return
 
 #--DATABASE HELPER FUNCTIONS----------------------------------#

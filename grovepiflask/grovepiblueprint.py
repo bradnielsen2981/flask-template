@@ -1,15 +1,12 @@
 #these imports work relative to the flask app file
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
-from interfaces.grovepiinterface import GrovePiInterface
+from grovepiflask.interfaces.grovepiinterface import GrovePiInterface
 from datetime import datetime
 import time
 import globalvars
 
 #STUPID FOLDER STRUCTURE ISNT WORKING - templates folder?????
-grovepiblueprint = Blueprint('grovepiblueprint', __name__, template_folder='templates/grovepi', static_folder='static/grovepi')
-GROVEPI = globalvars.GROVEPI
-DATABASE = globalvars.DATABASE
-LOGGER = globalvars.LOGGER
+grovepiblueprint = Blueprint('grovepiblueprint', __name__, template_folder='templates', static_folder='static')
 
 # homepage for the grovepi
 @grovepiblueprint.route('/grovepiexample', methods=['GET','POST'])
@@ -22,19 +19,19 @@ def grovepiexample():
 def grovepiload():
     if not globalvars.GROVEPI:
         globalvars.GROVEPI = GrovePiInterface(timelimit=20) 
-        LOGGER.info("loaded grovepi")
+        globalvars.LOGGER.info("loaded grovepi")
     return redirect('/grovepiexample')
 
 # shuts down the grove pi
 @grovepiblueprint.route('/shutdowngrovepi', methods=['GET','POST'])
 def grovepishutdown():
     globalvars.GROVEPI = None
-    LOGGER.info("shutdown grovepi")
+    globalvars.LOGGER.info("shutdown grovepi")
     return redirect('/grovepiexample')
 
 @grovepiblueprint.route('/grovehistory', methods=['GET','POST'])
 def grovehistory():
-    data = DATABASE.ViewQuery("SELECT * FROM grovehistory")
+    data = globalvars.DATABASE.ViewQuery("SELECT * FROM grovehistory")
     return render_template('grovehistory.html', data=data)
 
 #GET DATA FROM CLIENT - RESIDES ON PYTHON ANYWHERE FLASK SERVER
@@ -46,7 +43,7 @@ def handleurlrequest():
         hum = request.form['hum']
         sound = request.form['sound']
         dt = datetime.now()
-        DATABASE.ModifyQuery("INSERT INTO grovehistory (hiveid, temp, hum, sound, datetime) VALUES (?,?,?,?,?)",(hiveid, temp, hum, sound, dt))
+        globalvars.DATABASE.ModifyQuery("INSERT INTO grovehistory (hiveid, temp, hum, sound, datetime) VALUES (?,?,?,?,?)",(hiveid, temp, hum, sound, dt))
         message = "Received data from " + str(hiveid)
     return jsonify({"message":message})
 

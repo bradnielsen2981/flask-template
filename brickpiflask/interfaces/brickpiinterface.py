@@ -5,10 +5,9 @@ try:
     from di_sensors.temp_hum_press import TempHumPress
 except ImportError:
     print("BrickPi not installed") #module not found
-    sys.exit() #exit
+    quit()
+    #how to preemptively exit a file when running, without exiting the program
 import time, math, sys, logging, threading
-
-from enum import Enum
 
 MAGNETIC_DECLINATION = 11 #set for areas
 USEMUTEX = True #avoid threading issues
@@ -26,14 +25,13 @@ class BrickPiInterface():
         self.logger = logging.getLogger()
         self.CurrentCommand = "loading"
         self.Configured = False #is the robot yet Configured?
+        self.BP = None
         self.BP = brickpi3.BrickPi3() # Create an instance of the BrickPi3
+        self.set_ports()
         self.timelimit = timelimit #failsafe timelimit - motors turn off after
         self.imu_status = 0 
-        self.set_ports()
         self.Calibrated = False
-        self.CurrentCommand = "loaded" #when the device is ready for a new instruction it will be set to stop
-        global ENABLED
-        ENABLED = True
+        self.CurrentCommand = "loaded" #when the device is ready for a new instruction it 
         return
 
     #--- Initialise Ports --------#
@@ -46,7 +44,6 @@ class BrickPiInterface():
         self.thermal = bp.PORT_2 #Thermal infrared Sensor
         self.colour = bp.PORT_1 #Colour Sensor
         self.ultra = bp.PORT_4 #ultraSonic Sensor
-        self.claw_closed = True #Current state of the claw
         self.thermal_thread = None #DO NOT REMOVE THIS - USED LATER
         self.configure_sensors()
         return
@@ -347,7 +344,7 @@ class BrickPiInterface():
         return
 
     #--------------MOTOR COMMANDS-----------------#
-    #simply turns motors on
+    #simply turns motors on, dangerous because it does not turn them off
     def move_power(self, power, deviation=0):
         bp = self.BP
         self.CurrentCommand = "move_power"
@@ -368,6 +365,10 @@ class BrickPiInterface():
         self.BP.set_motor_power(self.largemotors, 0)
         return
 
+    #Advanced - create a function that will move until distance to
+
+    #Adanced - create a function that will move until colour detected
+
     #Rotate power and time, -power to reverse
     def rotate_power_time(self, power, t):
         self.CurrentCommand = "rotate_power_time"
@@ -379,6 +380,8 @@ class BrickPiInterface():
         bp.set_motor_power(self.largemotors, 0) #stop
         self.CurrentCommand = 'stop'
         return
+
+    #Advanced - create a function the will rote until object detected
         
     #Rotates the robot with power and degrees using the IMU sensor. Negative degrees = left.
     #the larger the number of degrees and the low the power, the more accurate
@@ -492,7 +495,7 @@ class BrickPiInterface():
     #returns a dictionary of all current sensors
     def get_all_sensors(self):
         sensordict = {} #create a dictionary for the sensors
-        sensordict['battery'] = self.get_battery()
+        #sensordict['battery'] = self.get_battery()
         sensordict['colour'] = self.get_colour_sensor()
         sensordict['ultrasonic'] = self.get_ultra_sensor()
         sensordict['thermal'] = self.get_thermal_sensor()
@@ -516,20 +519,20 @@ class BrickPiInterface():
 
 #load the brickpi
 def load_brickpi(timelimit):
-    global BRICKPI
-    if not BRICKPI:
-        BRICKPI = BrickPiInterface(timelimit)
-    return
+    brickpiinstance = BrickPiInterface(timelimit)
+    return brickpiinstance
     
 #--------------------------------------------------------------------
 # Only execute if this is the main file, good for testing code
 if __name__ == '__main__':
-    robot = BrickPiInterface(timelimit=20)
+    robot = BrickPiInterface(timelimit=20)  #20 second timelimit before move functions exit
     logger = logging.getLogger()
     robot.set_log(logger)
+    robot.log("HERE I AM")
     input("Press any key to test: ")
-    #robot.move_power_time(50, 1, deviation=0)
-    robot.rotate_power_time(-30, 0.5)
-    robot.spin_medium_motor(200)
+    #robot.move_power_time(30, 3, deviation=5) #deviation 5 seems work well, if reversing deviation needs to also reverse
+    #robot.rotate_power_degrees_IMU(30, 180) #depeding on momentum, margin of error needs to be used
+    #robot.move_power_time(30, 3, deviation=5)
+    #robot.spin_medium_motor(200) #negative will push forward
     print(robot.get_all_sensors())
     robot.safe_exit()

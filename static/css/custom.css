@@ -7,3 +7,5 @@ footer { margin-top:20px; }
 h1, h2 { margin-bottom:20px !important; }
 .row { margin:8px; }
 .form-control { margin:3px; margin-left:0px; }
+.fitrow { width:50%; }
+button { min-width:150px; }
