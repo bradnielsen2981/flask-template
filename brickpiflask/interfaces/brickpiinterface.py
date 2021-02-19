@@ -21,8 +21,8 @@ class SensorStatus():
 class BrickPiInterface():
 
     #Initialise log and timelimit
-    def __init__(self, timelimit=20):
-        self.logger = logging.getLogger()
+    def __init__(self, timelimit=20, logger=logging.getLogger()):
+        self.logger = logger
         self.CurrentCommand = "loading"
         self.Configured = False #is the robot yet Configured?
         self.BP = None
@@ -267,7 +267,7 @@ class BrickPiInterface():
             ifMutexRelease(USEMUTEX) 
         return distance
 
-    #returns the colour current sensed - "none", "Black", "Blue", "Green", "Yellow", "Red", "White", "Brown"
+    #returns the colour current sensed - "NOREADING", "Black", "Blue", "Green", "Yellow", "Red", "White", "Brown"
     def get_colour_sensor(self):
         if self.config['colour'] >= SensorStatus.DISABLED or not self.Configured:
             return "NOREADING"
@@ -362,7 +362,7 @@ class BrickPiInterface():
         while time.time() < timelimit and self.CurrentCommand != "stop":
             continue
         self.CurrentCommand = "stop"
-        self.BP.set_motor_power(self.largemotors, 0)
+        bp.set_motor_power(self.largemotors, 0)
         return
 
     #Advanced - create a function that will move until distance to
@@ -381,10 +381,10 @@ class BrickPiInterface():
         self.CurrentCommand = 'stop'
         return
 
-    #Advanced - create a function the will rote until object detected
+    #Advanced - create a function the will rotate until object detected
         
     #Rotates the robot with power and degrees using the IMU sensor. Negative degrees = left.
-    #the larger the number of degrees and the low the power, the more accurate
+    #the larger the number of degrees and the lower the power, the more accurate
     def rotate_power_degrees_IMU(self, power, degrees, marginoferror=3):
         if self.config['imu'] >= SensorStatus.DISABLED or not self.Configured:
             return
@@ -495,7 +495,7 @@ class BrickPiInterface():
     #returns a dictionary of all current sensors
     def get_all_sensors(self):
         sensordict = {} #create a dictionary for the sensors
-        #sensordict['battery'] = self.get_battery()
+        sensordict['battery'] = self.get_battery()
         sensordict['colour'] = self.get_colour_sensor()
         sensordict['ultrasonic'] = self.get_ultra_sensor()
         sensordict['thermal'] = self.get_thermal_sensor()
@@ -525,9 +525,7 @@ def load_brickpi(timelimit):
 #--------------------------------------------------------------------
 # Only execute if this is the main file, good for testing code
 if __name__ == '__main__':
-    robot = BrickPiInterface(timelimit=20)  #20 second timelimit before move functions exit
-    logger = logging.getLogger()
-    robot.set_log(logger)
+    robot = BrickPiInterface(timelimit=20)  #20 second timelimit before
     robot.log("HERE I AM")
     input("Press any key to test: ")
     #robot.move_power_time(30, 3, deviation=5) #deviation 5 seems work well, if reversing deviation needs to also reverse
