@@ -1,3 +1,5 @@
+alert("json example loaded")
+
 /* ---JSON EXAMPLE OF SENDING MORE THAN ONE VARIABLE------------ */
 function findhypotenuse()
 {
@@ -6,7 +8,7 @@ function findhypotenuse()
     var paramobject = {};
     paramobject.sideA = sideA;
     paramobject.sideB = sideB;
-    JSONrequest('/trighandler', 'POST', receivehypotenuse, paramobject);
+    JSONrequest('/jsontest/trighandler', 'POST', receivehypotenuse, paramobject);
 }
 //callback function that receives the JSON, the dictionary keys become variables
 function receivehypotenuse(result) 
@@ -19,7 +21,7 @@ var recurringhandle = null; //A handle to the recurring function
 recurringhandle = setInterval(getactiveusers, 5000); //start pinging the server
 function getactiveusers()
 {
-    JSONrequest('/getactiveusers', 'POST', receiveactiveusers);
+    JSONrequest('/jsontest/getactiveusers', 'POST', receiveactiveusers);
 }
 //callback function
 function receiveactiveusers(result)

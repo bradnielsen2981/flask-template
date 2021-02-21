@@ -15,8 +15,8 @@ globalvars.DATABASE = Database('test.sqlite', app.logger)
 
 #---REGISTER BLUEPRINTS FOR ADDITIONAL FLASK VIEWS AND OTHER CONDITIONAL IMPORTS -------------#
 if app.config['JSON']:
-    from jsondemo.jsonblueprint import jsonblueprint
-    app.register_blueprint(jsonblueprint, url_prefix='/json')
+    from jsontest.jsonblueprint import jsonblueprint
+    app.register_blueprint(jsonblueprint, url_prefix='/jsontest')
 if app.config['BRICKPI']:
     from brickpiflask.brickpiblueprint import brickpiblueprint
     app.register_blueprint(brickpiblueprint, url_prefix='/brickpi')
@@ -128,13 +128,6 @@ def logoff():
     session.clear()
     return redirect('./')
 
-# bootstrap demo - Bootstrap is linked to the layout.html page - read W3 schools for more information
-@app.route('/bootstrap', methods=['GET','POST'])
-def bootstrap():
-    if 'userid' not in session: #userid hasnt logged in
-        return redirect('./')   #need to use the dot to avoid redirecting data
-    data=None
-    return render_template('bootstrap.html', data=data)
 
 #a hard shutdown of the web server - only the admin can shutdown the server
 @app.route('/shutdown', methods=['GET','POST'])

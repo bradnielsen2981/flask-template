@@ -1,28 +1,23 @@
 {% extends "layout.html" %}
 
-{% block styles %}
-	<link rel="stylesheet" href="static/grovepi.css" />
-{% endblock %}
-
 {% block menu %}
-        <nav class="navbar navbar-expand-lg navbar navbar-dark bg-warning">
+        <nav class="navbar navbar-expand-lg navbar navbar-dark bg-success">
                 <a href="/" class="navbar-brand">Flask Example</a>
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse2">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse2">
                     <div class="navbar-nav">
-                        {% if config['GROVEPI'] %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">GrovePi Examples
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Template Examples
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/grovepi/grovepidashboard">GrovePi Dashboard</a>
-                              <a class="dropdown-item" href="/grovepi/grovepichart">GrovePi Chart</a>
-                              <a class="dropdown-item" href="/grovepi/grovepihistory">GrovePi History</a>
+                              <a class="dropdown-item" href="/jsontest/bootstrap">Bootstrap</a>
+                              {% if config['JSON'] %}
+                                <a class="dropdown-item" href="/jsontest/jsontest">JSON</a>
+                              {% endif %}
                             </div>
                         </li>
-                        {% endif %}
                         <a href="/register" class="nav-item nav-link">Register</a>
                         {% if 'permission' in session %}
                             {% if session['permission'] == 'admin' %}

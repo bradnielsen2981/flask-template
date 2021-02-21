@@ -27,14 +27,18 @@ def brickpisensorview():
 @brickpiblueprint.route('/brickpiload', methods=['GET','POST'])
 def brickpiload():
     if globalvars.BRICKPI == None:
-        globalvars.BRICKPI = load_brickpi(20)
+        globalvars.BRICKPI = load_brickpi(20, app.log)
+        motorports = {'rightmotor':bp.PORT_B, 'leftmotor':bp.PORT_C, 'mediummotor':bp.PORT_D }
+        sensorports = { 'thermal':None,'colour':None,'ultra':None,'imu':None }
+        globalvars.BRICKPI.configure_sensors(motorports,sensorports)
     return jsonify({'message':"Brick Pi loaded"})
 
 # AJAX - shutdown the brickpi
 @brickpiblueprint.route('/brickpishutdown', methods=['GET','POST'])
 def brickpishutdown():
-    globalvars.BRICKPI.safe_exit()
-    globalvars.BRICKPI = None
+    if globalvars.BRICKPI:
+        globalvars.BRICKPI.safe_exit()
+        globalvars.BRICKPI = None
     return jsonify({'message':"Brick Pi shutting down"})
 
 # turtle demo

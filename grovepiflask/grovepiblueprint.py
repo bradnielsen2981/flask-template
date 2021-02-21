@@ -1,5 +1,5 @@
 #these imports work relative to the flask app file
-from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
+from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify
 from grovepiflask.interfaces.grovepiinterface import GrovePiInterface
 from datetime import datetime
 import time
@@ -9,10 +9,10 @@ import globalvars
 grovepiblueprint = Blueprint('grovepiblueprint', __name__, template_folder='templates', static_folder='static')
 
 # homepage for the grovepi
-@grovepiblueprint.route('/grovepiexample', methods=['GET','POST'])
-def grovepiexample():
+@grovepiblueprint.route('/grovepidashboard', methods=['GET','POST'])
+def grovepidashboard():
     enabled = (globalvars.GROVEPI != None)
-    return render_template('grovepi.html', grovepienabled=enabled)
+    return render_template('grovepidashboard.html', grovepienabled=enabled)
 
 # loads the grovepi
 @grovepiblueprint.route('/loadgrovepi', methods=['GET','POST'])
@@ -20,7 +20,7 @@ def grovepiload():
     if not globalvars.GROVEPI:
         globalvars.GROVEPI = GrovePiInterface(timelimit=20) 
         globalvars.LOGGER.info("loaded grovepi")
-    return redirect('/grovepiexample')
+    return redirect(url_for('grovepiblueprint.grovepidashboard'))
 
 # shuts down the grove pi
 @grovepiblueprint.route('/shutdowngrovepi', methods=['GET','POST'])
@@ -29,10 +29,10 @@ def grovepishutdown():
     globalvars.LOGGER.info("shutdown grovepi")
     return redirect('/grovepiexample')
 
-@grovepiblueprint.route('/grovehistory', methods=['GET','POST'])
+@grovepiblueprint.route('/grovepihistory', methods=['GET','POST'])
 def grovehistory():
     data = globalvars.DATABASE.ViewQuery("SELECT * FROM grovehistory")
-    return render_template('grovehistory.html', data=data)
+    return render_template('grovepihistory.html', data=data)
 
 #GET DATA FROM CLIENT - RESIDES ON PYTHON ANYWHERE FLASK SERVER
 @grovepiblueprint.route('/handleurlrequest', methods=['GET','POST'])
@@ -47,17 +47,19 @@ def handleurlrequest():
         message = "Received data from " + str(hiveid)
     return jsonify({"message":message})
 
-#RASPERRY PI LOCAL WEB SERVER FUNCTIONS------------------------------------#
-# use AJAX and JSON to get temperature without a page refresh
-# gets the temperature
-# homepage for the grovepi
-@grovepiblueprint.route('/googlechart', methods=['GET','POST'])
+@grovepiblueprint.route('/grovepichart', methods=['GET','POST'])
 def googlechart():
     enabled = (globalvars.GROVEPI != None)
     if not globalvars.GROVEPI:
         flash("You need to load the grove pi!")
-        return redirect('/grovepiexample')
-    return render_template('googlechart.html', grovepienabled=enabled)
+        return redirect(url_for('grovepiblueprint.grovepidashboard'))
+    return render_template('grovepichart.html', grovepienabled=enabled)
+
+
+#RASPERRY PI LOCAL WEB SERVER FUNCTIONS------------------------------------#
+# use AJAX and JSON to get temperature without a page refresh
+# gets the temperature
+# homepage for the grovepi
 
 @grovepiblueprint.route('/lightswitch', methods=['GET','POST'])
 def lightswitch():

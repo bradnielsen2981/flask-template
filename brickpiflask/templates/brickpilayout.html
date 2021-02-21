@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+	<link rel="stylesheet" href="static/brickpi.css" />
+{% endblock %}
+
+{% block menu %}
+        <nav class="navbar navbar-expand-lg navbar navbar-dark bg-danger">
+                <a href="/" class="navbar-brand">Flask Example</a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse2">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse2">
+                    <div class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">BrickPi Examples
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <a class="dropdown-item" href="/brickpi/brickpidashboard">BrickPi Dashboard</a>
+                              <a class="dropdown-item" href="/brickpi/brickpisensorview">BrickPi Sensor View</a>
+                              <a class="dropdown-item" href="/brickpi/brickpiturtle">BrickPi Turtle</a>
+                            </div>
+                        </li>
+                        <a href="/register" class="nav-item nav-link">Register</a>
+                        {% if 'permission' in session %}
+                            {% if session['permission'] == 'admin' %}
+                                <a href="/admin" class="nav-item nav-link">Admin</a>
+                            {% endif %}
+                        {% endif %}
+                        <a href="/logoff" class="nav-item nav-link">Log Off</a>
+                    </div>
+                </div>
+            </nav><br>
+    {% endblock %}

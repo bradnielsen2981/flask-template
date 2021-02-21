@@ -5,7 +5,7 @@
     <title>Flask Example</title>
     <!-- CSS Links -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/custom.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
     {% block styles %}{% endblock %} <!-- insert any custom css -->
     <!-- Javascript Links -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <!-- AJAX -->
@@ -13,6 +13,7 @@
 </head>
 
 <body style="font-size:16px;">
+        {% block menu %}
         <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary">
                 <a href="/" class="navbar-brand">Flask Example</a>
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse2">
@@ -24,9 +25,9 @@
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Template Examples
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/bootstrap">Bootstrap</a>
                               {% if config['JSON'] %}
-                              <a class="dropdown-item" href="/json">JSON</a>
+                                <a class="dropdown-item" href="/jsontest/bootstrap">Bootstrap</a>
+                                <a class="dropdown-item" href="/jsontest/jsontest">JSON</a>
                               {% endif %}
                             </div>
                         </li>
@@ -35,9 +36,9 @@
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">GrovePi Examples
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/grovepi/grovepidashboard">GrovePi</a>
-                              <a class="dropdown-item" href="/grovepi/grovepichart">Google Chart</a>
-                              <a class="dropdown-item" href="/grovepi/grovepihistory">History</a>
+                              <a class="dropdown-item" href="/grovepi/grovepidashboard">GrovePi Dasboard</a>
+                              <a class="dropdown-item" href="/grovepi/grovepichart">GrovePi Chart</a>
+                              <a class="dropdown-item" href="/grovepi/grovepihistory">GrovePi History</a>
                             </div>
                         </li>
                         {% endif %}
@@ -46,9 +47,9 @@
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">BrickPi Examples
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="brickpi/brickpidashboard">BrickPi Dashboard</a>
-                              <a class="dropdown-item" href="brickpi/brickpisensorview">BrickPi Sensor View</a>
-                              <a class="dropdown-item" href="brickpi/brickpiturtle">BrickPi Turtle</a>
+                              <a class="dropdown-item" href="/brickpi/brickpidashboard">BrickPi Dashboard</a>
+                              <a class="dropdown-item" href="/brickpi/brickpisensorview">BrickPi Sensor View</a>
+                              <a class="dropdown-item" href="/brickpi/brickpiturtle">BrickPi Turtle</a>
                             </div>
                         </li>
                         {% endif %}
@@ -62,6 +63,7 @@
                     </div>
                 </div>
             </nav><br>
+    {% endblock %}
     {% block content %}{% endblock %} <!-- Container for Content -->
     <footer>
         <div class="container">

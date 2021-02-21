@@ -5,11 +5,10 @@ try:
     from di_sensors.temp_hum_press import TempHumPress
 except ImportError:
     print("BrickPi not installed") #module not found
-    quit()
-    #how to preemptively exit a file when running, without exiting the program
+    
 import time, math, sys, logging, threading
 
-MAGNETIC_DECLINATION = 11 #set for areas
+MAGNETIC_DECLINATION = 11 #set for different magnetic fields based on location
 USEMUTEX = True #avoid threading issues
 
 class SensorStatus():
@@ -20,71 +19,76 @@ class SensorStatus():
 #Created a Class to wrap the robot functionality, one of the features is the idea of keeping track of the CurrentCommand, this is important when more than one process is running...
 class BrickPiInterface():
 
-    #Initialise log and timelimit
+    #Initialise timelimit and logging
     def __init__(self, timelimit=20, logger=logging.getLogger()):
         self.logger = logger
         self.CurrentCommand = "loading"
         self.Configured = False #is the robot yet Configured?
         self.BP = None
         self.BP = brickpi3.BrickPi3() # Create an instance of the BrickPi3
-        self.set_ports()
-        self.timelimit = timelimit #failsafe timelimit - motors turn off after
-        self.imu_status = 0 
-        self.Calibrated = False
+        self.config = {} #create a dictionary that represents if the sensor is Configured
+        self.timelimit = timelimit #fail safe timelimit - motors turn off after timelimit
+        self.imu_status = 0; self.Calibrated = False
         self.CurrentCommand = "loaded" #when the device is ready for a new instruction it 
         return
 
-    #--- Initialise Ports --------#
-    def set_ports(self):
+    #------------------- Initialise Ports ---------------------------#
+    # motorports = {'rightmotor':bp.PORT_B, 'leftmotor':bp.PORT_C, 'mediummotor':bp.PORT_D }
+    # sensorports = { 'thermal':bp.PORT_2,'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':I2C }
+    # if some ports do not exist, set as disabled
+    # this will take 3-4 seconds to initialise
+    def configure_sensors(self, motorports, sensorports):
         bp = self.BP
-        self.rightmotor = bp.PORT_B
-        self.leftmotor = bp.PORT_C
-        self.largemotors = bp.PORT_B + bp.PORT_C
-        self.mediummotor = bp.PORT_D
-        self.thermal = bp.PORT_2 #Thermal infrared Sensor
-        self.colour = bp.PORT_1 #Colour Sensor
-        self.ultra = bp.PORT_4 #ultraSonic Sensor
-        self.thermal_thread = None #DO NOT REMOVE THIS - USED LATER
-        self.configure_sensors()
-        return
+        self.thermal_thread = None
+        self.rightmotor = motorports['rightmotor']
+        self.leftmotor = motorports['leftmotor']
+        self.largemotors = motorports['rightmotor'] + motorports['leftmotor']
+        self.mediummotor = motorports['mediummotor']
+        #set up thermal - thermal sensor uses a thread because else it disables motors 
+        self.thermal = sensorports['thermal']
+        self.config['thermal'] = SensorStatus.DISABLED
+        if self.thermal:
+            try:
+                bp.set_sensor_type(self.thermal, bp.SENSOR_TYPE.I2C, [0, 20])
+                time.sleep(1)
+                self.config['thermal'] = SensorStatus.ENABLED
+                self.__start_thermal_infrared_thread()
+            except Exception as error:
+                self.log("Thermal Sensor not found")
 
-    #-- Configure Sensors - take 4 seconds ---------#
-    def configure_sensors(self):
-        bp = self.BP
-        self.config = {} #create a dictionary that represents if the sensor is Configured
-        #set up colour sensor
-        try:
-            bp.set_sensor_type(self.colour, bp.SENSOR_TYPE.EV3_COLOR_COLOR)
-            time.sleep(1)
-            self.config['colour'] = SensorStatus.ENABLED #SensorStatus.ENABLED
-        except Exception as error:
-            self.log("Colour Sensor not found")
-            self.config['colour'] = SensorStatus.DISABLED #SensorStatus.DISABLED
-        #set up ultrasonic
-        try:
-            bp.set_sensor_type(self.ultra, bp.SENSOR_TYPE.EV3_ULTRASONIC_CM)
-            time.sleep(1.5)
-            self.config['ultra'] = SensorStatus.ENABLED
-        except Exception as error:
-            self.log("Ultrasonic Sensor not found")
-            self.config['ultra'] = SensorStatus.DISABLED
-        #set up thermal
-        try:
-            bp.set_sensor_type(self.thermal, bp.SENSOR_TYPE.I2C, [0, 20])
-            time.sleep(1)
-            self.config['thermal'] = SensorStatus.ENABLED
-            self.__start_thermal_infrared_thread()
-        except Exception as error:
-            self.log("Thermal Sensor not found")
-            self.config['thermal'] = SensorStatus.DISABLED
-        #set up imu      
-        try:
-            self.imu = InertialMeasurementUnit()
-            time.sleep(1)
-            self.config['imu'] = SensorStatus.ENABLED
-        except Exception as error:
-            self.log("IMU sensor not found")
-            self.config['imu'] = SensorStatus.DISABLED   
+        #configure colour sensor
+        self.colour = sensorports['colour']
+        self.config['colour'] = SensorStatus.DISABLED
+        if self.colour:
+            try:
+                bp.set_sensor_type(self.colour, bp.SENSOR_TYPE.EV3_COLOR_COLOR)
+                time.sleep(1)
+                self.config['colour'] = SensorStatus.ENABLED #SensorStatus.ENABLED
+            except Exception as error:
+                self.log("Colour Sensor not found")
+
+        #set up ultrasonic    
+        self.ultra = sensorports['ultra']
+        self.config['ultra'] = SensorStatus.DISABLED
+        if self.ultra:
+            try:
+                bp.set_sensor_type(self.ultra, bp.SENSOR_TYPE.EV3_ULTRASONIC_CM)
+                time.sleep(1.5)
+                self.config['ultra'] = SensorStatus.ENABLED
+            except Exception as error:
+                self.log("Ultrasonic Sensor not found")
+
+        #set up imu  
+        self.imu = sensorports['imu']
+        self.config['imu'] = SensorStatus.DISABLED
+        if self.imu:    
+            try:
+                self.imu = InertialMeasurementUnit()
+                time.sleep(1)
+                self.config['imu'] = SensorStatus.ENABLED
+            except Exception as error:
+                self.log("IMU sensor not found")
+                self.config['imu'] = SensorStatus.DISABLED   
         
         bp.set_motor_limits(self.mediummotor, 100, 600) #set power / speed limit 
         self.Configured = True #there is a 4 second delay - before robot is Configured
@@ -518,14 +522,17 @@ class BrickPiInterface():
         return
 
 #load the brickpi
-def load_brickpi(timelimit):
-    brickpiinstance = BrickPiInterface(timelimit)
+def load_brickpi(timelimit, log):
+    brickpiinstance = BrickPiInterface(timelimit, log)
     return brickpiinstance
     
 #--------------------------------------------------------------------
 # Only execute if this is the main file, good for testing code
 if __name__ == '__main__':
     robot = BrickPiInterface(timelimit=20)  #20 second timelimit before
+    motorports = {'rightmotor':bp.PORT_B, 'leftmotor':bp.PORT_C, 'mediummotor':bp.PORT_D }
+    sensorports = { 'thermal':None,'colour':None,'ultra':None,'imu':None }
+    robot.configure_sensors(motorports, sensorports) #This takes 4 seconds
     robot.log("HERE I AM")
     input("Press any key to test: ")
     #robot.move_power_time(30, 3, deviation=5) #deviation 5 seems work well, if reversing deviation needs to also reverse

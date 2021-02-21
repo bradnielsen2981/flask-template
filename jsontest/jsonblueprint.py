@@ -1,19 +1,26 @@
 #these imports work relative to the flask app file
-from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, g
+from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify
 from datetime import datetime
 import helpers
 import globalvars
 
-jsonblueprint = Blueprint('jsonblueprint', __name__, template_folder='templates/json', static_folder='static/json')
-DATABASE = globalvars.DATABASE
+jsonblueprint = Blueprint('jsonblueprint', __name__, template_folder='templates', static_folder='static')
+
+# bootstrap demo - Bootstrap is linked to the layout.html page - read W3 schools for more information
+@jsonblueprint.route('/bootstrap', methods=['GET','POST'])
+def bootstrap():
+    if 'userid' not in session: #userid hasnt logged in
+        return redirect('./')   #need to use the dot to avoid redirecting data
+    data=None
+    return render_template('bootstrap.html', data=data)
 
 #json test page
-@jsonblueprint.route('/json', methods=['GET','POST'])
+@jsonblueprint.route('/jsontest', methods=['GET','POST'])
 def jsontest():
     if 'userid' not in session: #userid hasnt logged in
         return redirect('./')   #need to use the dot to avoid redirecting data
     data=None
-    return render_template('json.html', data=data)
+    return render_template('jsontest.html', data=data)
 
 #calculates the hypotenuse - demonstrates receiving multiple values
 @jsonblueprint.route('/trighandler', methods=['GET','POST'])
@@ -32,7 +39,7 @@ def getactiveusers():
     if 'userid' in session:
         helpers.update_access(session['userid']) #calls my custom helper function
     fmt = "%d/%m/%Y %H:%M:%S"
-    users = DATABASE.ViewQuery("SELECT username, lastaccess from users")
+    users = globalvars.DATABASE.ViewQuery("SELECT username, lastaccess from users")
     activeusers = [] #blank list
     for user in users:
         if user['lastaccess']:
@@ -40,6 +47,4 @@ def getactiveusers():
             if td.seconds < 120:
                 activeusers.append(user['username']) #makes a list of names
     return jsonify({'activeusers':activeusers}) #list of users
-
-
 
