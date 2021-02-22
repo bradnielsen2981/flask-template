@@ -1,37 +1,48 @@
-alert("brickpiloadedhandler loaded")
+alert("brickpiloadedhandler loaded");
 
-function showdashboard()
+function hideelement(element)
 {
-    mblock = document.getElementById('dashboard');
+    mblock= document.getElementById(element);
+    mblock.style.visibility = "hidden";
+}
+
+function showelement(element)
+{
+    mblock= document.getElementById(element);
     mblock.style.visibility = "visible";
-    mbutton= document.getElementById('loadbrickpibutton');
-    mbutton.style.visibility = "hidden";
 }
 
-function hidedashboard()
+function setelement(element, message)
 {
-    mblock = document.getElementById('dashboard');
-    mblock.style.visibility = "hidden"; 
-    mbutton= document.getElementById('loadbrickpibutton');
-    mbutton.style.visibility = "visible";
+    mblock = document.getElementById(element);
+    mblock.innerHTML = message;
 }
 
+//loaded handler
 function brickpiloadedhandler(results)
 {
+    //load button is hidden prior
     console.log(results.message);
-    mblock = document.getElementById('jsonmessage');
-    mblock.style.visibility = "visible";
-    mblock.innerHTML = results.message;
+    setelement("jsonmessage", results.message);
+    showelement("dashboard");
+}
 
-    //need to test the robot loaded properly before the following
-    showdashboard();
+//shutdown handler
+function brickpishutdownhandler(results)
+{
+    //dashboard is hidden prior
+    console.log(results.message);
+    setelement("jsonmessage", results.message);
+    showelement("loadbutton");
 }
 
 //hide or show dashboard
 if (robotenabled) {
-    showdashboard();
+    hideelement("loadbutton");
+    showelement("dashboard");
 } else {
-    hidedashboard();
+    hideelement("dashboard");
+    showelement("loadbutton"); 
 }
 
-//need a good loading bar as well
+

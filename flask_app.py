@@ -7,7 +7,7 @@ import helpers
 import globalvars
 
 #---CONFIGURE APP---------------------------------------------------#
-#sys.tracebacklimit = 1 #Level of python traceback - reduces error text in python anywhere
+sys.tracebacklimit = 1 #Level of python traceback - reduces error text in python anywhere
 app = Flask(__name__) #Creates the Flask Server Object
 app.config.from_object('config.Config')
 globalvars.LOGGER = app.logger #set the log to Flask's default logger
@@ -97,14 +97,14 @@ def register():
             return render_template('register.html')
         username = request.form['username']
         #Activity for students - update database to include a gender field and then modify the INSERT SQL below to include gender
-        #gender = request.form['gender'] #not in databaseinterface yet, uses drop down list
+        #gender = request.form['gender'] # use drop down list
         location = request.form['location']
         email = request.form['email']
         results = globalvars.DATABASE.ViewQuery('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
         if results:
             flash("Your email or username is already in use.")
             return render_template('register.html')
-        #TO DO hash password 
+        ##Activity for students - hash passwords 
         globalvars.DATABASE.ModifyQuery('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
         return redirect('./')
     return render_template('register.html')
@@ -128,13 +128,16 @@ def logoff():
     session.clear()
     return redirect('./')
 
-
 #a hard shutdown of the web server - only the admin can shutdown the server
 @app.route('/shutdown', methods=['GET','POST'])
 def shutdown():
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')
+    if globalvars.BRICKPI:
+        globalvars.BRICKPI.safe_exit()
+    if globalvars.GROVEPI:
+        globalvars.GROVEPI.safe_exit()
     func = request.environ.get('werkzeug.server.shutdown')
     func()
     return "Exiting"

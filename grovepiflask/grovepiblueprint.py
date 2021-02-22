@@ -11,6 +11,8 @@ grovepiblueprint = Blueprint('grovepiblueprint', __name__, template_folder='temp
 # homepage for the grovepi
 @grovepiblueprint.route('/grovepidashboard', methods=['GET','POST'])
 def grovepidashboard():
+    if 'userid' not in session: #userid hasnt logged in
+        return redirect('./')   #need to use the dot to avoid redirecting da
     enabled = (globalvars.GROVEPI != None)
     return render_template('grovepidashboard.html', grovepienabled=enabled)
 
@@ -31,6 +33,8 @@ def grovepishutdown():
 
 @grovepiblueprint.route('/grovepihistory', methods=['GET','POST'])
 def grovehistory():
+    if 'userid' not in session: #userid hasnt logged in
+        return redirect('./')   #need to use the dot to avoid redirecting da
     data = globalvars.DATABASE.ViewQuery("SELECT * FROM grovehistory")
     return render_template('grovepihistory.html', data=data)
 
@@ -49,6 +53,8 @@ def handleurlrequest():
 
 @grovepiblueprint.route('/grovepichart', methods=['GET','POST'])
 def googlechart():
+    if 'userid' not in session: #userid hasnt logged in
+        return redirect('./')   #need to use the dot to avoid redirecting da
     enabled = (globalvars.GROVEPI != None)
     if not globalvars.GROVEPI:
         flash("You need to load the grove pi!")
@@ -91,6 +97,6 @@ def grovepilcd():
         if globalvars.GROVEPI.Configured:
             colour = (255,0,255)
             globalvars.GROVEPI.output_RGB(colour,message)
-    return redirect(url_for('grovepiblueprint.grovepiexample'))
+    return jsonify({'message':'rgb activated'})
 
 #------------------------------------------------------------------#

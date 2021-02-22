@@ -4,6 +4,6 @@ class Config:
     SECRET_KEY = 'my random key can be anything' #required to encrypt Sessions
     JSON = True
     BRICKPI = True
-    GROVEPI = True
+    GROVEPI = False
     EMAIL = False
     CROSSDOMAIN = False

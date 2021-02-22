@@ -34,10 +34,10 @@ class BrickPiInterface():
 
     #------------------- Initialise Ports ---------------------------#
     # motorports = {'rightmotor':bp.PORT_B, 'leftmotor':bp.PORT_C, 'mediummotor':bp.PORT_D }
-    # sensorports = { 'thermal':bp.PORT_2,'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':I2C }
+    # sensorports = { 'thermal':bp.PORT_2,'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':1 }
     # if some ports do not exist, set as disabled
     # this will take 3-4 seconds to initialise
-    def configure_sensors(self, motorports, sensorports):
+    def configure_sensors(self, motorports, sensorports = { 'thermal':None,'colour':None,'ultra':None,'imu':0 }):
         bp = self.BP
         self.thermal_thread = None
         self.rightmotor = motorports['rightmotor']
@@ -49,6 +49,8 @@ class BrickPiInterface():
         self.config['thermal'] = SensorStatus.DISABLED
         if self.thermal:
             try:
+                if self.thermal_thread:
+                    self.CurrentCommand = 'exit'
                 bp.set_sensor_type(self.thermal, bp.SENSOR_TYPE.I2C, [0, 20])
                 time.sleep(1)
                 self.config['thermal'] = SensorStatus.ENABLED
@@ -294,6 +296,7 @@ class BrickPiInterface():
     def __update_thermal_sensor_thread(self, name):
         while self.CurrentCommand != "exit":
             self.update_thermal_sensor()
+            #print("Thread running")
         return
 
     #updates the thermal sensor by making a single I2C transaction
@@ -514,8 +517,10 @@ class BrickPiInterface():
     # call this function to turn off the motors and exit safely.
     def safe_exit(self):
         bp = self.BP
-        self.CurrentCommand = 'exit' #should exit thread
+        self.CurrentCommand = 'exit' #should exit thread but just incase
         self.stop_all() #stop all motors
+        time.sleep(1)
+        self.disable_thermal_sensor()
         self.log("Exiting")
         bp.reset_all() # Unconfigure the sensors, disable the motors
         time.sleep(2) #gives time to reset??
@@ -530,8 +535,9 @@ def load_brickpi(timelimit, log):
 # Only execute if this is the main file, good for testing code
 if __name__ == '__main__':
     robot = BrickPiInterface(timelimit=20)  #20 second timelimit before
+    bp = robot.BP #alias to shorten code
     motorports = {'rightmotor':bp.PORT_B, 'leftmotor':bp.PORT_C, 'mediummotor':bp.PORT_D }
-    sensorports = { 'thermal':None,'colour':None,'ultra':None,'imu':None }
+    sensorports = { 'thermal':bp.PORT_2,'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':1 }
     robot.configure_sensors(motorports, sensorports) #This takes 4 seconds
     robot.log("HERE I AM")
     input("Press any key to test: ")
