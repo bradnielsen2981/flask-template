@@ -75,7 +75,7 @@ class BrickPiInterface():
         if self.ultra:
             try:
                 bp.set_sensor_type(self.ultra, bp.SENSOR_TYPE.EV3_ULTRASONIC_CM)
-                time.sleep(1.5)
+                time.sleep(2)
                 self.config['ultra'] = SensorStatus.ENABLED
             except Exception as error:
                 self.log("Ultrasonic Sensor not found")
@@ -526,10 +526,6 @@ class BrickPiInterface():
         time.sleep(2) #gives time to reset??
         return
 
-#load the brickpi
-def load_brickpi(timelimit, log):
-    brickpiinstance = BrickPiInterface(timelimit, log)
-    return brickpiinstance
     
 #--------------------------------------------------------------------
 # Only execute if this is the main file, good for testing code

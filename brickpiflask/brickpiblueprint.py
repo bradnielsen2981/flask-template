@@ -1,5 +1,5 @@
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify
-from brickpiflask.interfaces.brickpiinterface import *
+from brickpiflask.yourrobot import *
 import helpers
 from datetime import datetime
 import globalvars
@@ -44,13 +44,13 @@ def brickpiturtle():
 def brickpiload():
     global BRICKPI
     if BRICKPI == None:
-        BRICKPI = load_brickpi(20, globalvars.LOGGER)
+        BRICKPI = load_robot(20, globalvars.LOGGER)
         globalvars.BRICKPI = BRICKPI #update reference in global
         sensordict = "Not Loaded"
         if BRICKPI:
             bp = BRICKPI.BP #alias to shorten code
             motorports = {'rightmotor':bp.PORT_B, 'leftmotor':bp.PORT_C, 'mediummotor':bp.PORT_D }
-            sensorports = { 'thermal':bp.PORT_2,'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':1 }
+            sensorports =  { 'thermal':bp.PORT_2,'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':1 }
             BRICKPI.configure_sensors(motorports,sensorports) #should take 4 secs
             if BRICKPI.Configured:
                 sensordict = BRICKPI.get_all_sensors()

@@ -24,6 +24,7 @@ function brickpiloadedhandler(results)
     //load button is hidden prior
     console.log(results.message);
     setelement("jsonmessage", results.message);
+    showelement("jsonmessage");
     showelement("dashboard");
 }
 
