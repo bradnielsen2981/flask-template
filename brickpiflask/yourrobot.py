@@ -42,6 +42,7 @@ if __name__ == '__main__':
     robot.configure_sensors(motorports, sensorports) #This takes 4 seconds
     robot.log("HERE I AM")
     input("Press any key to test: ")
-    robot.move_power_time(30, 3, deviation=5) #deviation 5 seems work well, if reversing deviation needs to also reverse
+    robot.move_power_time(50, 3, deviation=5) #deviation 5 seems work well, if reversing deviation needs to also reverse
+    print("HELLO")
     print(robot.get_all_sensors())
     robot.safe_exit()
