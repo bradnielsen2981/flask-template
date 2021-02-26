@@ -388,6 +388,18 @@ class BrickPiInterface():
         self.CurrentCommand = 'stop'
         return
 
+        #Rotate power and time, -power to reverse
+    def rotate_power(self, power):
+        self.CurrentCommand = "rotate_power_time"
+        bp = self.BP
+        target = time.time() + timelimit
+        while time.time() < target and self.CurrentCommand != 'stop':
+            bp.set_motor_power(self.rightmotor, -power)
+            bp.set_motor_power(self.leftmotor, power)
+        bp.set_motor_power(self.largemotors, 0) #stop
+        self.CurrentCommand = 'stop'
+        return
+
     #Advanced - create a function the will rotate until object detected
         
     #Rotates the robot with power and degrees using the IMU sensor. Negative degrees = left.
