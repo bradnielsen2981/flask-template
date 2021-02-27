@@ -372,10 +372,6 @@ class BrickPiInterface():
         bp.set_motor_power(self.largemotors, 0)
         return
 
-    #Advanced - create a function that will move until distance to
-
-    #Adanced - create a function that will move until colour detected
-
     #Rotate power and time, -power to reverse
     def rotate_power_time(self, power, t):
         self.CurrentCommand = "rotate_power_time"
@@ -388,7 +384,7 @@ class BrickPiInterface():
         self.CurrentCommand = 'stop'
         return
 
-        #Rotate power and time, -power to reverse
+    #Rotate power 
     def rotate_power(self, power):
         self.CurrentCommand = "rotate_power_time"
         bp = self.BP
