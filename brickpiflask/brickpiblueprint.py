@@ -11,10 +11,17 @@ BRICKPI = globalvars.BRICKPI #ALIAS for globalvars.BRICKPI
 DATABASE = globalvars.DATABASE #ALIAS for globalvars.DATABASE
 
 # homepage for the brickpi
+@brickpiblueprint.route('/', methods=['GET','POST'])
+def brickpihome():
+    if 'userid' not in session: #userid hasnt logged in
+        return redirect('../')   #need to use the dot to avoid redirecting da
+    return render_template('brickpihome.html') 
+
+# dashboard for the brickpi
 @brickpiblueprint.route('/brickpidashboard', methods=['GET','POST'])
 def brickpidashboard():
     if 'userid' not in session: #userid hasnt logged in
-        return redirect('./')   #need to use the dot to avoid redirecting da
+        return redirect('../')   #need to use the dot to avoid redirecting da
     enabled = (BRICKPI != None)
     return render_template('brickpidashboard.html', robotenabled=enabled) #hides or shows controls
 
@@ -22,7 +29,7 @@ def brickpidashboard():
 @brickpiblueprint.route('/brickpisensorview', methods=['GET','POST'])
 def brickpisensorview():
     if 'userid' not in session: #userid hasnt logged in
-        return redirect('./')   #need to use the dot to avoid redirecting data
+        return redirect('../')   #need to use the dot to avoid redirecting data
     if BRICKPI == None:
         flash("Brick PI is not yet loaded!!")
         return redirect(url_for('brickpiblueprint.brickpidashboard'))
@@ -32,11 +39,19 @@ def brickpisensorview():
 @brickpiblueprint.route('/brickpiturtle', methods=['GET','POST'])
 def brickpiturtle():
     if 'userid' not in session: #userid hasnt logged in
-        return redirect('./')   #need to use the dot to avoid redirecting data
+        return redirect('../')   #need to use the dot to avoid redirecting data
     if request.method == "POST":
         pass
     return render_template('brickpiturtle.html')
 
+@brickpiblueprint.route('/brickpimaintenance', methods=['GET','POST'])
+def brickpimaintenance():
+    if 'userid' not in session: #userid hasnt logged in
+        return redirect('../')   #need to use the dot to avoid redirecting data
+    if request.method == "POST":
+        pass
+    resultslist = DATABASE.ViewQuery("SELECT * from users") #returns a list of dictionaries
+    return render_template('brickpimaintenance.html', data = resultslist)
 
 # ----------AJAX / JSON REQUEST HANDLERS ---------------------------------
 # AJAX - load the brickpi

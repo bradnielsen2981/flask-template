@@ -3,15 +3,18 @@ import uuid, sys, logging, math, time, os, re
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify
 from interfaces.databaseinterface import Database
 from datetime import datetime
-import helpers
 import globalvars
+import helpers
+
 
 #---CONFIGURE APP---------------------------------------------------#
 sys.tracebacklimit = 1 #Level of python traceback - reduces error text in python anywhere
 app = Flask(__name__) #Creates the Flask Server Object
 app.config.from_object('config.Config')
-globalvars.LOGGER = app.logger #set the log to Flask's default logger
-globalvars.DATABASE = Database('test.sqlite', app.logger) 
+globalvars.LOGGER = app.logger; LOGGER = globalvars.LOGGER
+
+globalvars.DATABASE = Database('test.sqlite', app.logger);
+DATABASE = globalvars.DATABASE
 
 #---REGISTER BLUEPRINTS FOR ADDITIONAL FLASK VIEWS AND OTHER CONDITIONAL IMPORTS -------------#
 if app.config['JSON']:
@@ -47,7 +50,7 @@ def login():
         email = request.form['email']   #get the form field with the name 
         password = request.form['password']
         #Activity for students - Hash password to see if it matches database
-        userdetails = globalvars.DATABASE.ViewQuery("SELECT * FROM users WHERE email=? AND password=?",(email,password))
+        userdetails = DATABASE.ViewQuery("SELECT * FROM users WHERE email=? AND password=?",(email,password))
         if userdetails:
             row = userdetails[0] #userdetails is a list of dictionaries
             helpers.update_access(row['userid']) #calls my custom helper function
@@ -56,7 +59,7 @@ def login():
             session['permission'] = row['permission']
             return redirect('./home')
         else:
-            globalvars.LOGGER.error("Login failed for " + str(email) + " from " + str(get_user_ip()))
+            #LOGGER.error("Login failed for " + str(email) + " from " + str(helpers.get_user_ip()))
             flash("Sorry no user found, password or email incorrect") #flash will send messages to the screen
     return render_template('login.html')
 
@@ -71,7 +74,7 @@ def home():
 # admin page only available to admin - allows admin to update or delete
 @app.route('/admin', methods=['GET','POST'])
 def admin():
-    userdetails = globalvars.DATABASE.ViewQuery('SELECT * FROM users')
+    userdetails = DATABASE.ViewQuery('SELECT * FROM users')
     if 'permission' in session: #check to see if session cookie contains the permission level
         if session['permission'] != 'admin':
             return redirect('./')
@@ -100,12 +103,12 @@ def register():
         #gender = request.form['gender'] # use drop down list
         location = request.form['location']
         email = request.form['email']
-        results = globalvars.DATABASE.ViewQuery('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
+        results = DATABASE.ViewQuery('SELECT * FROM users WHERE email = ? OR username =?',(email, username))
         if results:
             flash("Your email or username is already in use.")
             return render_template('register.html')
         ##Activity for students - hash passwords 
-        globalvars.DATABASE.ModifyQuery('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
+        DATABASE.ModifyQuery('INSERT INTO users (username, password, email, location) VALUES (?,?,?,?)',(username, password, email, location))
         return redirect('./')
     return render_template('register.html')
 

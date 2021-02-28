@@ -6,11 +6,13 @@ import globalvars
 
 jsonblueprint = Blueprint('jsonblueprint', __name__, template_folder='templates', static_folder='static')
 
+DATABASE = globalvars.DATABASE
+
 # bootstrap demo - Bootstrap is linked to the layout.html page - read W3 schools for more information
 @jsonblueprint.route('/bootstrap', methods=['GET','POST'])
 def bootstrap():
     if 'userid' not in session: #userid hasnt logged in
-        return redirect('./')   #need to use the dot to avoid redirecting data
+        return redirect('../')   #need to use the dot to avoid redirecting data
     data=None
     return render_template('bootstrap.html', data=data)
 
@@ -18,7 +20,7 @@ def bootstrap():
 @jsonblueprint.route('/jsontest', methods=['GET','POST'])
 def jsontest():
     if 'userid' not in session: #userid hasnt logged in
-        return redirect('./')   #need to use the dot to avoid redirecting data
+        return redirect('../')   #need to use the dot to avoid redirecting data
     data=None
     return render_template('jsontest.html', data=data)
 
@@ -39,7 +41,7 @@ def getactiveusers():
     if 'userid' in session:
         helpers.update_access(session['userid']) #calls my custom helper function
     fmt = "%d/%m/%Y %H:%M:%S"
-    users = globalvars.DATABASE.ViewQuery("SELECT username, lastaccess from users")
+    users = DATABASE.ViewQuery("SELECT username, lastaccess from users")
     activeusers = [] #blank list
     for user in users:
         if user['lastaccess']:

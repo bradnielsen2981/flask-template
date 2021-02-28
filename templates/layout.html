@@ -22,7 +22,7 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse2">
                     <div class="navbar-nav">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Template Examples
+                            <a class="nav-link dropdown-toggle" href="/jsontest/" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Template Examples
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                               {% if config['JSON'] %}
@@ -32,26 +32,10 @@
                             </div>
                         </li>
                         {% if config['GROVEPI'] %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">GrovePi Examples
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/grovepi/grovepidashboard">GrovePi Dasboard</a>
-                              <a class="dropdown-item" href="/grovepi/grovepichart">GrovePi Chart</a>
-                              <a class="dropdown-item" href="/grovepi/grovepihistory">GrovePi History</a>
-                            </div>
-                        </li>
+                            <a href="/grovepi/" class="nav-item nav-link">GrovePi</a>
                         {% endif %}
                         {% if config['BRICKPI'] %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">BrickPi Examples
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/brickpi/brickpidashboard">BrickPi Dashboard</a>
-                              <a class="dropdown-item" href="/brickpi/brickpisensorview">BrickPi Sensor View</a>
-                              <a class="dropdown-item" href="/brickpi/brickpiturtle">BrickPi Turtle</a>
-                            </div>
-                        </li>
+                            <a href="/brickpi/" class="nav-item nav-link">BrickPi</a>
                         {% endif %}
                         <a href="/register" class="nav-item nav-link">Register</a>
                         {% if 'permission' in session %}

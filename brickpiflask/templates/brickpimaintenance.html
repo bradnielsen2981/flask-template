@@ -1,0 +1,26 @@
+{% extends "brickpilayout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Maintenance Log</h1>
+    <p>Please enter the details of your issue below:</p>
+    {% if data %}
+        <table class="table">
+        <tr>
+            <!-- Get all the keys of the first python dictionary as column headings -->
+            {% for key in data[0].keys() %}
+                <th>{{key}}</th>
+            {% endfor %}
+        </tr>
+            <!-- Print out each python dictionary into a html table row -->
+        {% for row in data %}
+        <tr>
+            {% for column in row.values() %}
+            <td>{{column}}</td>
+            {% endfor %}
+        </tr>
+        {%endfor%}
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

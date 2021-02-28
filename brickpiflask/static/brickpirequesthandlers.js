@@ -1,4 +1,4 @@
-alert("brickpiloadedhandler loaded");
+//alert("brickpiloadedhandler loaded");
 
 function hideelement(element)
 {

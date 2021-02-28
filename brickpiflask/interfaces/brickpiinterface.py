@@ -548,6 +548,6 @@ if __name__ == '__main__':
     #robot.move_power_time(30, 3, deviation=5) #deviation 5 seems work well, if reversing deviation needs to also reverse
     #robot.rotate_power_degrees_IMU(30, 180) #depeding on momentum, margin of error needs to be used
     #robot.move_power_time(30, 3, deviation=5)
-    #robot.spin_medium_motor(200) #negative will push forward
+    robot.spin_medium_motor(2000) #negative will push forward
     print(robot.get_all_sensors())
     robot.safe_exit()
