@@ -46,12 +46,15 @@ def brickpiturtle():
 
 @brickpiblueprint.route('/brickpimaintenance', methods=['GET','POST'])
 def brickpimaintenance():
+    data = None
     if 'userid' not in session: #userid hasnt logged in
         return redirect('../')   #need to use the dot to avoid redirecting data
     if request.method == "POST":
-        pass
-    resultslist = DATABASE.ViewQuery("SELECT * from users") #returns a list of dictionaries
-    return render_template('brickpimaintenance.html', data = resultslist)
+        issuedescription = request.form['issuedescription']
+        dt = datetime.now()
+        DATABASE.ModifyQuery('INSERT INTO maintenance (issuedescription, datetime) VALUES (?,?)',(issuedescription, dt))
+    results = DATABASE.ViewQuery("SELECT * FROM maintenance") #list of dictionaires
+    return render_template('brickpimaintenance.html', data = results)
 
 # ----------AJAX / JSON REQUEST HANDLERS ---------------------------------
 # AJAX - load the brickpi

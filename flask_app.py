@@ -12,9 +12,7 @@ sys.tracebacklimit = 1 #Level of python traceback - reduces error text in python
 app = Flask(__name__) #Creates the Flask Server Object
 app.config.from_object('config.Config')
 globalvars.LOGGER = app.logger; LOGGER = globalvars.LOGGER
-
-globalvars.DATABASE = Database('test.sqlite', app.logger);
-DATABASE = globalvars.DATABASE
+globalvars.DATABASE = Database('test.sqlite', app.logger); DATABASE = globalvars.DATABASE
 
 #---REGISTER BLUEPRINTS FOR ADDITIONAL FLASK VIEWS AND OTHER CONDITIONAL IMPORTS -------------#
 if app.config['JSON']:
