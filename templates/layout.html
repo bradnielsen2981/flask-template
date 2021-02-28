@@ -21,16 +21,9 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse2">
                     <div class="navbar-nav">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="/jsontest/" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Template Examples
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              {% if config['JSON'] %}
-                                <a class="dropdown-item" href="/jsontest/bootstrap">Bootstrap</a>
-                                <a class="dropdown-item" href="/jsontest/jsontest">JSON</a>
-                              {% endif %}
-                            </div>
-                        </li>
+                        {% if config['JSON'] %}
+                            <a href="/jsontest/" class="nav-item nav-link">Template Examples</a>
+                        {% endif %}
                         {% if config['GROVEPI'] %}
                             <a href="/grovepi/" class="nav-item nav-link">GrovePi</a>
                         {% endif %}

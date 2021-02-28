@@ -8,6 +8,14 @@ jsonblueprint = Blueprint('jsonblueprint', __name__, template_folder='templates'
 
 DATABASE = globalvars.DATABASE
 
+#json test page
+@jsonblueprint.route('/', methods=['GET','POST'])
+def jsontesthome():
+    if 'userid' not in session: #userid hasnt logged in
+        return redirect('../')   #need to use the dot to avoid redirecting data
+    data=None
+    return render_template('jsontesthome.html', data=data)
+
 # bootstrap demo - Bootstrap is linked to the layout.html page - read W3 schools for more information
 @jsonblueprint.route('/bootstrap', methods=['GET','POST'])
 def bootstrap():
