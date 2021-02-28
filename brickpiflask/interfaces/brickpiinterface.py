@@ -388,7 +388,7 @@ class BrickPiInterface():
     def rotate_power(self, power):
         self.CurrentCommand = "rotate_power_time"
         bp = self.BP
-        target = time.time() + timelimit
+        target = time.time() + self.timelimit
         while time.time() < target and self.CurrentCommand != 'stop':
             bp.set_motor_power(self.rightmotor, -power)
             bp.set_motor_power(self.leftmotor, power)
