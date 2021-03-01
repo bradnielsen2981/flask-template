@@ -382,9 +382,10 @@ class BrickPiInterface():
         self.CurrentCommand = "rotate_power_time"
         bp = self.BP
         target = time.time() + t
+        bp.set_motor_power(self.rightmotor, -power)
+        bp.set_motor_power(self.leftmotor, power)
         while time.time() < target and self.CurrentCommand != 'stop':
-            bp.set_motor_power(self.rightmotor, -power)
-            bp.set_motor_power(self.leftmotor, power)
+            continue
         bp.set_motor_power(self.largemotors, 0) #stop
         self.CurrentCommand = 'stop'
         return
@@ -395,9 +396,10 @@ class BrickPiInterface():
         bp = self.BP
         start = time.time()
         target = start + self.timelimit
+        bp.set_motor_power(self.rightmotor, -power)
+        bp.set_motor_power(self.leftmotor, power)
         while time.time() < target and self.CurrentCommand != 'stop':
-            bp.set_motor_power(self.rightmotor, -power)
-            bp.set_motor_power(self.leftmotor, power)
+            continue
         elapsed = time.time() - start
         bp.set_motor_power(self.largemotors, 0) #stop
         self.CurrentCommand = 'stop'
