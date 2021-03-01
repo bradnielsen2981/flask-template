@@ -404,8 +404,6 @@ class BrickPiInterface():
         bp.set_motor_power(self.largemotors, 0) #stop
         self.CurrentCommand = 'stop'
         return elapsed #returns the elapsed time after stop has been called
-
-    #Advanced - create a function the will rotate until object detected
         
     #Rotates the robot with power and degrees using the IMU sensor. Negative degrees = left.
     #the larger the number of degrees and the lower the power, the more accurate
