@@ -355,9 +355,14 @@ class BrickPiInterface():
     def move_power(self, power, deviation=0):
         bp = self.BP
         self.CurrentCommand = "move_power"
+        start = time.time()
+        timelimit = start + self.timelimit
         bp.set_motor_power(self.rightmotor, power)
         bp.set_motor_power(self.leftmotor, power + deviation)
-        return
+        while time.time() < timelimit and self.CurrentCommand != "stop":
+            continue
+        elapsed = time.time() - start
+        return elapsed #return the elapsed time.
 
     #moves for the specified time (seconds) and power - use negative power to reverse
     def move_power_time(self, power, t, deviation=0):
@@ -388,13 +393,15 @@ class BrickPiInterface():
     def rotate_power(self, power):
         self.CurrentCommand = "rotate_power_time"
         bp = self.BP
-        target = time.time() + self.timelimit
+        start = time.time()
+        target = start + self.timelimit
         while time.time() < target and self.CurrentCommand != 'stop':
             bp.set_motor_power(self.rightmotor, -power)
             bp.set_motor_power(self.leftmotor, power)
+        elapsed = time.time() - start
         bp.set_motor_power(self.largemotors, 0) #stop
         self.CurrentCommand = 'stop'
-        return
+        return elapsed #returns the elapsed time after stop has been called
 
     #Advanced - create a function the will rotate until object detected
         

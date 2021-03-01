@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-	<h1>BrickPi Example</h1>
+	<h1>Dashboard</h1>
 	<div class="row">
 		<button id="loadbutton" type="button" class="btn btn-success" onclick="hideelement('loadbutton'); JSONrequest('brickpiload','POST',brickpiloadedhandler);">Load BrickPi</button>
 	</div>
@@ -11,15 +11,14 @@
 	<div id="dashboard">
 	<div class="row text-center fitrow">
 		<div class="col-4">
-		<button type="button" class="btn btn-success" onclick="JSONrequest('brickpistart','POST')">Start</button>
+			<button type="button" class="btn btn-success" onclick="JSONrequest('brickpistart','POST')">Start</button>
 		</div>
 		<div class="col-4">
-		<button type="button" class="btn btn-danger" onclick="JSONrequest('brickpistop','POST')">Stop</button>
+			<button type="button" class="btn btn-danger" onclick="JSONrequest('brickpistop','POST')">Stop</button>
 		</div>
 		<div class="col-4">
-		<button type="button" class="btn btn-dark" onclick="hideelement('dashboard'); JSONrequest('brickpishutdown','POST', brickpishutdownhandler);">Shutdown Robot</button>
+			<button type="button" class="btn btn-dark" onclick="hideelement('dashboard'); JSONrequest('brickpishutdown','POST', brickpishutdownhandler);">Shutdown Robot</button>
 		</div>
-	</div>
 	</div>
 </div>
 {% endblock %}
