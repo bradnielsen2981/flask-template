@@ -2,7 +2,23 @@
 
 {% block content %}
 <div class="container">
-    <h1>Maintenance Log</h1>
-    <p>Please enter the details of your issue below:</p>
+    <h1>Sensor View</h1>
+    {% if data %} <!-- data is a single dictionary -->
+    <p>See the sensor values below:</p>
+    <table class="table">
+        <thead><tr><th scope="col">Sensor</th><th scope="col">Value</th></tr></thead>
+        <tbody>
+            <tr><th scope="row">Battery</th><td id="sbattery">{{data['battery']}}</td><td>volts</td></tr>
+            <tr><th scope="row">Colour</th><td id="scolour">{{data['colour']}}</td><td>-</td></tr>
+            <tr><th scope="row">Ultrasonic</th><td id="sultrasonic">{{data['ultrasonic']}}</td><td>cm</td></tr>
+            <tr><th scope="row">Thermal</th><td id="sthermal">{{data['thermal']}}</td><td>Celsius</td></tr>
+            <tr><th scope="row">Acceleration</th><td id="sacceleration">{{data['acceleration']}}</td><td>cm/s^2</td></tr>
+            <tr><th scope="row">Compass</th><td id="scompass">{{data['compass']}}</td><td>degrees</td></tr>
+            <tr><th scope="row">Gyro</th><td id="sgyro">{{data['gyro']}}</td><td>degrees/s^2</td></tr>
+            <tr><th scope="row">Temperature</th><td id="stemperature">{{data['temperature']}}</td><td>Celsius</td></tr>
+            <tr><th scope="row">Orientation</th><td id="sorientation">{{data['orientation']}}</td><td>units</td></tr>
+        </tbody>
+        </table>
+    {% endif %}
 </div>
 {% endblock %}

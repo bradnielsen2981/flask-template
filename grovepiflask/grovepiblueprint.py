@@ -20,6 +20,22 @@ def grovepidashboard():
     enabled = (GROVEPI != None)
     return render_template('grovepidashboard.html', grovepienabled=enabled)
 
+@grovepiblueprint.route('/grovepihistory', methods=['GET','POST'])
+def grovepihistory():
+    if 'userid' not in session: #userid hasnt logged in
+        return redirect('../')   #need to use the dot to avoid redirecting da
+    data = DATABASE.ViewQuery("SELECT * FROM grovehistory")
+    return render_template('grovepihistory.html', data=data)
+
+@grovepiblueprint.route('/grovepichart', methods=['GET','POST'])
+def grovepichart():
+    if 'userid' not in session: #userid hasnt logged in
+        return redirect('../')   #need to use the dot to avoid redirecting 
+    data = None
+    return render_template('grovepichart.html', data=data)
+
+
+#AJAX CALLED FUNCTIONS
 # loads the grovepi
 @grovepiblueprint.route('/loadgrovepi', methods=['GET','POST'])
 def grovepiload():
@@ -37,13 +53,6 @@ def grovepishutdown():
     LOGGER.info("shutdown grovepi")
     return redirect('/grovepiexample')
 
-@grovepiblueprint.route('/grovepihistory', methods=['GET','POST'])
-def grovehistory():
-    if 'userid' not in session: #userid hasnt logged in
-        return redirect('../')   #need to use the dot to avoid redirecting da
-    data = DATABASE.ViewQuery("SELECT * FROM grovehistory")
-    return render_template('grovepihistory.html', data=data)
-
 #GET DATA FROM CLIENT - RESIDES ON PYTHON ANYWHERE FLASK SERVER
 @grovepiblueprint.route('/handleurlrequest', methods=['GET','POST'])
 def handleurlrequest():
@@ -56,17 +65,6 @@ def handleurlrequest():
         DATABASE.ModifyQuery("INSERT INTO grovehistory (hiveid, temp, hum, sound, datetime) VALUES (?,?,?,?,?)",(hiveid, temp, hum, sound, dt))
         message = "Received data from " + str(hiveid)
     return jsonify({"message":message})
-
-@grovepiblueprint.route('/grovepichart', methods=['GET','POST'])
-def googlechart():
-    if 'userid' not in session: #userid hasnt logged in
-        return redirect('../')   #need to use the dot to avoid redirecting da
-    enabled = (GROVEPI != None)
-    if not GROVEPI:
-        flash("You need to load the grove pi!")
-        return redirect(url_for('grovepiblueprint.grovepidashboard'))
-    return render_template('grovepichart.html', grovepienabled=enabled)
-
 
 #RASPERRY PI LOCAL WEB SERVER FUNCTIONS------------------------------------#
 # use AJAX and JSON to get temperature without a page refresh

@@ -12,23 +12,12 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse2">
                     <div class="navbar-nav">
-                        {% if config['GROVEPI'] %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="/grovepi/" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">GrovePi
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/grovepi/grovepidashboard">GrovePi Dashboard</a>
-                              <a class="dropdown-item" href="/grovepi/grovepichart">GrovePi Chart</a>
-                              <a class="dropdown-item" href="/grovepi/grovepihistory">GrovePi History</a>
+                        <div class="collapse navbar-collapse" id="navbarCollapse2">
+                            <div class="navbar-nav">
+                                <a href="/grovepi/grovepidashboard" class="nav-item nav-link">Dashboard</a>
+                                <a href="/grovepi/grovepihistory" class="nav-item nav-link">History</a>
+                                <a href="/grovepi/grovepichart" class="nav-item nav-link">Chart</a>
                             </div>
-                        </li>
-                        {% endif %}
-                        <a href="/register" class="nav-item nav-link">Register</a>
-                        {% if 'permission' in session %}
-                            {% if session['permission'] == 'admin' %}
-                                <a href="/admin" class="nav-item nav-link">Admin</a>
-                            {% endif %}
-                        {% endif %}
                         <a href="/logoff" class="nav-item nav-link">Log Off</a>
                     </div>
                 </div>

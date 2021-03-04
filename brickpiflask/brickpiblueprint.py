@@ -33,7 +33,7 @@ def brickpisensorview():
     if BRICKPI == None:
         flash("Brick PI is not yet loaded!!")
         return redirect(url_for('brickpiblueprint.brickpidashboard'))
-    return render_template('brickpisensorview.html', sensordata=BRICKPI.get_all_sensors()) #hides or shows controls
+    return render_template('brickpisensorview.html', data=BRICKPI.get_all_sensors()) 
 
 # turtle demo
 @brickpiblueprint.route('/brickpiturtle', methods=['GET','POST'])
@@ -59,7 +59,7 @@ def brickpiload():
         if BRICKPI:
             bp = BRICKPI.BP #alias to shorten code
             motorports = {'rightmotor':bp.PORT_B, 'leftmotor':bp.PORT_C, 'mediummotor':bp.PORT_D }
-            sensorports =  { 'thermal':bp.PORT_2,'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':1 }
+            sensorports =  { 'thermal':bp.PORT_2, 'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':1 }
             BRICKPI.configure_sensors(motorports,sensorports) #should take 4 secs
             if BRICKPI.Configured:
                 sensordict = BRICKPI.get_all_sensors()
@@ -74,6 +74,57 @@ def brickpishutdown():
         BRICKPI = None
     return jsonify({'message':"Brick Pi shutting down"})
 
+# start the robot
+@brickpiblueprint.route('/brickpistart', methods=['GET','POST'])
+def brickpistart():
+    if BRICKPI:
+        BRICKPI.move_power(-30, 3)
+    return jsonify({'message':"start"})
 
+# stop the robot
+@brickpiblueprint.route('/brickpistop', methods=['GET','POST'])
+def brickpistop():
+    if BRICKPI:
+        BRICKPI.stop_all()
+    return jsonify({'message':"Robot is stopping"})
+
+# start the robot
+@brickpiblueprint.route('/brickpileft', methods=['GET','POST'])
+def brickpileft():
+    if BRICKPI:
+        BRICKPI.rotate_power(-30)
+    return jsonify({'message':"Robot turning left"})
+
+# stop the robot
+@brickpiblueprint.route('/brickpiright', methods=['GET','POST'])
+def brickpiright():
+    if BRICKPI:
+        BRICKPI.rotate_power(30)
+    return jsonify({'message':"Robot turning right"})
+
+# stop the robot
+@brickpiblueprint.route('/brickpishoot', methods=['GET','POST'])
+def brickpishoot():
+    if BRICKPI:
+        BRICKPI.spin_medium_motor(2000)
+    return jsonify({'message':"Fire"})
+
+@brickpiblueprint.route('/brickpirotatedegrees', methods=['GET','POST'])
+def brickpirotatedegrees():
+    if BRICKPI:
+        BRICKPI.rotate_power_degrees_IMU(30, 90)
+    return jsonify({'message':"rotate 90 degrees"})
+
+@brickpiblueprint.route('/brickpirotateheading', methods=['GET','POST'])
+def brickpirotateheading():
+    if BRICKPI:
+        BRICKPI.rotate_power_heading_IMU(30, 90)
+    return jsonify({'message':"rotate heading"})
+
+@brickpiblueprint.route('/brickpimove', methods=['GET','POST'])
+def brickpimove():
+    if BRICKPI:
+        BRICKPI.move_power_time(30, 3)
+    return jsonify({'message':"move time"})
 
 
