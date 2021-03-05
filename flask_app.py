@@ -147,4 +147,4 @@ def shutdown():
 #main method called web server application
 if __name__ == '__main__':
     #app.run() #PYTHON ANYTWHERE!!! will decide the port
-    app.run(host='0.0.0.0', port=5000) #runs a local server on port 5000
+    app.run(host='0.0.0.0', port=5000, threaded=True) #runs a local server on port 5000
