@@ -99,6 +99,7 @@ class BrickPiInterface():
                     time.sleep(1)
                     self.config['imu'] = SensorStatus.ENABLED
                 except Exception as error:
+                    self.config['imu'] = SensorStatus.DISABLED
                     self.log("IMU sensor not found")
         
         bp.set_motor_limits(self.mediummotor, 100, 600) #set power / speed limit 
@@ -596,7 +597,7 @@ if __name__ == '__main__':
     input("Press any key to test: ")
     #robot.move_power_time(30, 3, deviation=5) #deviation 5 seems work well, if reversing deviation needs to also reverse
     #robot.rotate_power_degrees_IMU(30, 180) #depeding on momentum, margin of error needs to be used
-    robot.move_power_time(30, 2, deviation=3)
+    robot.move_power_time(30, 2, deviation=0)
     robot.spin_medium_motor(1000) #negative will push forward
     print(robot.get_all_sensors())
     robot.safe_exit()

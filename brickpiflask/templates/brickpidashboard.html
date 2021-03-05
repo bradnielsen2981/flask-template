@@ -20,28 +20,6 @@
 				<button type="button" class="btn btn-dark" onclick="hideelement('dashboard'); JSONrequest('brickpishutdown','POST', brickpishutdownhandler);">Shutdown Robot</button>
 			</div>
 		</div>
-		<div class="row text-center fitrow">
-			<div class="col-4">
-				<button type="button" class="btn btn-success" onclick="JSONrequest('brickpileft','POST')">Turn Left</button>
-			</div>
-			<div class="col-4">
-				<button type="button" class="btn btn-success" onclick="JSONrequest('brickpiright','POST')">Turn Right</button>
-			</div>
-			<div class="col-4">
-				<button type="button" class="btn btn-danger" onclick="JSONrequest('brickpishoot','POST')">Fire</button>
-			</div>	
-		</div>
-		<div class="row text-center fitrow">
-			<div class="col-4">
-				<button type="button" class="btn btn-success" onclick="JSONrequest('brickpirotatedegrees','POST')">Rotate Power Degrees</button>
-			</div>
-			<div class="col-4">
-				<button type="button" class="btn btn-success" onclick="JSONrequest('brickpirotateheading','POST')">Rotate Power Heading</button>
-			</div>
-			<div class="col-4">
-				<button type="button" class="btn btn-danger" onclick="JSONrequest('brickpimove','POST')">Move Time</button>
-			</div>	
-		</div>
 	</div>
 </div>
 {% endblock %}

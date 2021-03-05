@@ -74,57 +74,6 @@ def brickpishutdown():
         BRICKPI = None
     return jsonify({'message':"Brick Pi shutting down"})
 
-# start the robot
-@brickpiblueprint.route('/brickpistart', methods=['GET','POST'])
-def brickpistart():
-    if BRICKPI:
-        BRICKPI.move_power(-30, 3)
-    return jsonify({'message':"start"})
 
-# stop the robot
-@brickpiblueprint.route('/brickpistop', methods=['GET','POST'])
-def brickpistop():
-    if BRICKPI:
-        BRICKPI.stop_all()
-    return jsonify({'message':"Robot is stopping"})
-
-# start the robot
-@brickpiblueprint.route('/brickpileft', methods=['GET','POST'])
-def brickpileft():
-    if BRICKPI:
-        BRICKPI.rotate_power(-30)
-    return jsonify({'message':"Robot turning left"})
-
-# stop the robot
-@brickpiblueprint.route('/brickpiright', methods=['GET','POST'])
-def brickpiright():
-    if BRICKPI:
-        BRICKPI.rotate_power(30)
-    return jsonify({'message':"Robot turning right"})
-
-# stop the robot
-@brickpiblueprint.route('/brickpishoot', methods=['GET','POST'])
-def brickpishoot():
-    if BRICKPI:
-        BRICKPI.spin_medium_motor(2000)
-    return jsonify({'message':"Fire"})
-
-@brickpiblueprint.route('/brickpirotatedegrees', methods=['GET','POST'])
-def brickpirotatedegrees():
-    if BRICKPI:
-        BRICKPI.rotate_power_degrees_IMU(30, 90)
-    return jsonify({'message':"rotate 90 degrees"})
-
-@brickpiblueprint.route('/brickpirotateheading', methods=['GET','POST'])
-def brickpirotateheading():
-    if BRICKPI:
-        BRICKPI.rotate_power_heading_IMU(30, 90)
-    return jsonify({'message':"rotate heading"})
-
-@brickpiblueprint.route('/brickpimove', methods=['GET','POST'])
-def brickpimove():
-    if BRICKPI:
-        BRICKPI.move_power_time(30, 3)
-    return jsonify({'message':"move time"})
 
 
