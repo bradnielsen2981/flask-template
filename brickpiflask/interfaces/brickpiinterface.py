@@ -371,10 +371,8 @@ class BrickPiInterface():
     #--------------MOTOR COMMANDS-----------------#
     #simply turns motors on, dangerous because it does not turn them off
     def move_power(self, power, deviation=0):
+        self.interrupt_previous_command()
         bp = self.BP
-        if self.CurrentCommand != "stop": #wait for current command to exit
-            self.CurrentCommand = "move_power"
-            time.sleep(1)
         self.CurrentCommand = "move_power"
         starttime = time.time()
         timelimit = starttime + self.timelimit
@@ -383,70 +381,61 @@ class BrickPiInterface():
         while ((time.time() < timelimit) and (self.CurrentCommand == "move_power")):
             continue
         elapsedtime = time.time() - starttime
-        bp.set_motor_power(self.largemotors, 0)
-        bp.CurrentCommand = "stop"
+        self.stop_all()
         return elapsedtime
 
     #moves for the specified time (seconds) and power - use negative power to reverse
     def move_power_time(self, power, t, deviation=0):
+        self.interrupt_previous_command()
         bp = self.BP
-        if self.CurrentCommand != "stop": #wait for current command to exit
-            self.CurrentCommand = "move_power_time"
-            time.sleep(1)
         self.CurrentCommand = "move_power_time"
         timelimit = time.time() + t
         bp.set_motor_power(self.rightmotor, power)
         bp.set_motor_power(self.leftmotor, power + deviation)
         while (time.time() < timelimit) and (self.CurrentCommand == "move_power_time"):
             continue
-        bp.set_motor_power(self.largemotors, 0)
-        bp.CurrentCommand = "stop"
+        self.stop_all()
         return
 
     #Rotate power and time, -power to reverse
     def rotate_power_time(self, power, t):
-        if self.CurrentCommand != "stop": #wait for current command to exit
-            self.CurrentCommand = "rotate_power_time"
-            time.sleep(1)
+        self.interrupt_previous_command()
         self.CurrentCommand = "rotate_power_time"
         bp = self.BP
         target = time.time() + t
+        bp.set_motor_power(self.rightmotor, -power)
+        bp.set_motor_power(self.leftmotor, power)
         while (time.time() < target) and (self.CurrentCommand == "rotate_power_time"):
-            bp.set_motor_power(self.rightmotor, -power)
-            bp.set_motor_power(self.leftmotor, power)
-        bp.set_motor_power(self.largemotors, 0) #stop
-        bp.CurrentCommand = "stop"
+            continue
+        self.stop_all() 
         return
 
     #Rotate power 
     def rotate_power(self, power):
-        if self.CurrentCommand != "stop": #wait for current command to exit
-            self.CurrentCommand = "rotate_power"
-            time.sleep(1)
+        bp = self.BP #alias
+        self.interrupt_previous_command()
         self.CurrentCommand = "rotate_power"
-        bp = self.BP
         starttime = time.time()
         timelimit = starttime + self.timelimit
         bp.set_motor_power(self.rightmotor, -power)
         bp.set_motor_power(self.leftmotor, power)
         while time.time() < timelimit and self.CurrentCommand == "rotate_power":
             continue
-        self.CurrentCommand = "stop"
         elapsedtime = time.time() - starttime
-        bp.set_motor_power(self.largemotors, 0)
-        bp.CurrentCommand = "stop"
+        self.stop_all()
         return elapsedtime
         
     #Rotates the robot with power and degrees using the IMU sensor. Negative degrees = left.
     #the larger the number of degrees and the lower the power, the more accurate
     def rotate_power_degrees_IMU(self, power, degrees, marginoferror=3):
+        bp = self.BP
         if (self.config['imu'] >= SensorStatus.DISABLED):
             return
-        if self.CurrentCommand != "stop": #wait for current command to exit
-            self.CurrentCommand = "rotate_power_degrees_IMU"
-            time.sleep(1)
+        self.interrupt_previous_command()
         self.CurrentCommand = "rotate_power_degrees_IMU"
-        bp = self.BP
+        
+        data = {'rotated':0,'elapsed':0}
+
         symbol = '<'; limit = 0
         if degrees == 0:
             return
@@ -456,29 +445,27 @@ class BrickPiInterface():
             symbol = '<='; limit = degrees-marginoferror; power = -power
         totaldegreesrotated = 0; lastrun = 0
         
-        elapsedtime = 0; starttime = time.time(); timelimit = starttime + self.timelimit
-         
-        self.log("target degrees: " + str(degrees))
-        self.log(str(totaldegreesrotated) + str(symbol) + str(limit))
+        starttime = time.time(); timelimit = starttime + self.timelimit
+        #start motors 
+        bp.set_motor_power(self.rightmotor, power)
+        bp.set_motor_power(self.leftmotor, -power)
+
         while eval("totaldegreesrotated" + str(symbol) + "limit") and (self.CurrentCommand == "rotate_power_degrees_IMU") and (time.time() < timelimit) and (self.config['imu'] < SensorStatus.DISABLED):
             lastrun = time.time()
-            bp.set_motor_power(self.rightmotor, power)
-            bp.set_motor_power(self.leftmotor, -power)
-            self.log("Total degrees rotated: " + str(totaldegreesrotated))
-            gyrospeed = self.get_gyro_sensor_IMU()[2] #roate around z-axis
+            gyrospeed = self.get_gyro_sensor_IMU()[2] #rotate around z-axis
             totaldegreesrotated += (time.time() - lastrun)*gyrospeed
-        bp.set_motor_power(self.largemotors, 0) #stop
-        self.CurrentCommand = "stop"
-        elapsedtime = time.time() - starttime
-        return elapsedtime
+        self.stop_all()
+
+        data['action'] = self.CurrentCommand
+        data['elapsed'] = time.time() - starttime
+        data['rotated'] = totaldegreesrotated
+        return data
 
     #rotates the robot until faces targetheading - only works for a heading between 0 - 360
     def rotate_power_heading_IMU(self, power, targetheading, marginoferror=3):
         if (self.config['imu'] >= SensorStatus.DISABLED):
             return
-        if self.CurrentCommand != "stop": #wait for current command to exit
-            self.CurrentCommand = "rotate_power_heading"
-            time.sleep(1)
+        self.interrupt_previous_command()
         self.CurrentCommand = "rotate_power_heading"
         bp = self.BP
         if targetheading < 0:
@@ -504,16 +491,13 @@ class BrickPiInterface():
         while (eval(expression) and (self.CurrentCommand == "rotate_power_heading") and (time.time() < timelimit) and (self.config['imu'] < SensorStatus.DISABLED)):
             heading = self.get_compass_IMU()
             self.log("Current heading: " + str(heading))
-        bp.set_motor_power(self.largemotors, 0) #stop
-        self.CurrentCommand = "stop"
+        self.stop_all()
         elapsedtime = time.time() - starttime
         return elapsedtime
 
     #spins the medium motor - this can be used for shooter or claw
     def spin_medium_motor(self, degrees):
-        if self.CurrentCommand != "stop": #wait for current command to exit
-            self.CurrentCommand = "spin_medium_motor"
-            time.sleep(1)
+        self.interrupt_previous_command()
         self.CurrentCommand = "spin_medium_motor"
         degrees = -degrees #if negative -> reverse motor
         bp = self.BP
@@ -534,8 +518,7 @@ class BrickPiInterface():
             currentdegrees = bp.get_motor_encoder(self.mediummotor) #where is the current angle
             bp.set_motor_position(self.mediummotor, degrees)
             currentdegrees = bp.get_motor_encoder(self.mediummotor) #ACCURACY PROBLEM
-        self.CurrentCommand = "stop"
-        bp.set_motor_power(self.mediummotor, 0)
+        self.stop_all()
         elapsedtime = time.time() - starttime
         return elapsedtime
 
@@ -544,7 +527,7 @@ class BrickPiInterface():
         self.logger.info(message)
         return
 
-    #stop all motors and set command to stop
+    #stop all motors and set current command to stop
     def stop_all(self):
         bp = self.BP
         bp.set_motor_power(self.largemotors+self.mediummotor, 0)
@@ -554,6 +537,13 @@ class BrickPiInterface():
     #returns the current command
     def get_current_command(self):
         return self.CurrentCommand
+
+    #interuppt previous command
+    def interrupt_previous_command(self):
+        if self.CurrentCommand != "stop": #wait for current command to exit
+            self.CurrentCommand = "stop"
+            time.sleep(1)
+        return
 
     #returns a dictionary of all current sensors
     def get_all_sensors(self):
@@ -591,13 +581,10 @@ if __name__ == '__main__':
     bp.reset_all() 
     time.sleep(2)
     motorports = {'rightmotor':bp.PORT_B, 'leftmotor':bp.PORT_C, 'mediummotor':bp.PORT_D }
-    sensorports = { 'thermal':bp.PORT_2, 'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':1 }
+    sensorports = { 'thermal':None, 'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':1 }
     robot.configure_sensors(motorports, sensorports) #This takes 4 seconds
     robot.log("HERE I AM")
     input("Press any key to test: ")
-    #robot.move_power_time(30, 3, deviation=5) #deviation 5 seems work well, if reversing deviation needs to also reverse
-    #robot.rotate_power_degrees_IMU(30, 180) #depeding on momentum, margin of error needs to be used
-    robot.move_power_time(30, 2, deviation=0)
-    robot.spin_medium_motor(1000) #negative will push forward
-    print(robot.get_all_sensors())
+    #print(robot.rotate_power_degrees_IMU(30, 90, 0))
+    #print(robot.get_all_sensors())
     robot.safe_exit()
