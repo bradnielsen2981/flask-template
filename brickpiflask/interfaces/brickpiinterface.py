@@ -279,7 +279,7 @@ class BrickPiInterface():
             distance = bp.get_sensor(self.ultra)
             time.sleep(0.2)
             self.config['ultra'] = SensorStatus.ENABLED
-        except brickpi3.SensorError as error:
+        except Exception as error:
             self.log("ULTRASONIC: " + str(error))
             self.config['ultra'] += 1
         finally:
@@ -298,7 +298,7 @@ class BrickPiInterface():
             value = bp.get_sensor(self.colour) 
             time.sleep(0.01)
             self.config['colour'] = SensorStatus.ENABLED
-        except brickpi3.SensorError as error:
+        except Exception as error:
             self.log("COLOUR: " + str(error))
             self.config['colour'] += 1
         ifMutexRelease(USEMUTEX)                
