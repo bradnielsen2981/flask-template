@@ -60,7 +60,7 @@ class BrickPiInterface():
             if self.config['thermal'] == SensorStatus.ENABLED:
                 self.get_thermal_sensor() #do one read
                 if self.config['thermal'] < SensorStatus.DISABLED:
-                    print("STARTING THREAD")
+                    print("STARTING THERMAL THREAD")
                     self.__start_thermal_infrared_thread() #thread is started
                 else:
                     bp.set_sensor_type(self.thermal, bp.SENSOR_TYPE.NONE)
@@ -309,7 +309,7 @@ class BrickPiInterface():
         bp = self.BP
         while self.thread_running:
             self.update_thermal_sensor()
-        print("EXITING THREAD")
+        print("EXITING THERMAL THREAD")
         bp.set_sensor_type(self.thermal, bp.SENSOR_TYPE.NONE) 
         return
 
