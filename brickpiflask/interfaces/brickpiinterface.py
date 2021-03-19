@@ -309,7 +309,7 @@ class BrickPiInterface():
         bp = self.BP
         while self.thread_running:
             self.update_thermal_sensor()
-        print("EXITING THREAD")
+        print("EXITING THERMAL THREAD")
         bp.set_sensor_type(self.thermal, bp.SENSOR_TYPE.NONE) 
         return
 
