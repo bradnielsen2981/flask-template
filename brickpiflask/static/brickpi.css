@@ -1,9 +1,10 @@
 /* 
     PLACE ANY CSS HERE
 */
+.jxgbox { width:300px; height:300px; }
+
 #map
 {
-    position: relative;
     min-width:300px;
     min-height:300px;
     padding-bottom: 25%;
@@ -18,7 +19,7 @@
     position: relative;
     width: 45%;
     min-width:300px;
-    min-height:240px;
+    min-height:300px;
     padding-bottom: 25%;
     float: left;
     height: 0;
