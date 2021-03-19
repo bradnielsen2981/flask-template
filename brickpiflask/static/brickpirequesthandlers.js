@@ -46,4 +46,9 @@ if (robotenabled) {
     showelement("loadbutton"); 
 }
 
+function donothing(results)
+{
+    console.log("Stopping");
+}
+
 

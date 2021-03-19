@@ -1,26 +1,48 @@
 {% extends "brickpilayout.html" %}
 
+{% block newstyles %}
+	<link href="https://cdn.jsdelivr.net/npm/jsxgraph@1.1.0/distrib/jsxgraph.css" />
+{% endblock %}
 {% block content %}
-<div class="container">
+<div class="container-fluid">
+
 	<h1>Dashboard</h1>
-	<div class="row">
-		<button id="loadbutton" type="button" class="btn btn-success" onclick="hideelement('loadbutton'); JSONrequest('brickpiload','POST',brickpiloadedhandler);">Load BrickPi</button>
-	</div>
-	<div id="stats" class="row"> <!-- recurring function - use json to fetch the voltage, currentcommand and current routine -->
-    </div>
+	<button id="loadbutton" type="button" class="btn btn-success" onclick="hideelement('loadbutton'); JSONrequest('brickpiload','POST',brickpiloadedhandler);">Load BrickPi</button>
+
 	<div id="dashboard">
+		<div class="row">
+			<div id="map"><div id="box" class="jxgbox"></div></div>
+			<div id="videofeed"><img src="{{ url_for('brickpiblueprint.videofeed') }}" width=100% ></div></div>
 		<div class="row text-center fitrow">
 			<div class="col-4">
-				<button type="button" class="btn btn-success" onclick="JSONrequest('brickpistart','POST')">Start</button>
+				<button type="button" class="btn btn-success" onclick="JSONrequest('brickpistart','POST',forwardturtle)">Forward</button>
 			</div>
 			<div class="col-4">
-				<button type="button" class="btn btn-danger" onclick="JSONrequest('brickpistop','POST')">Stop</button>
+				<button type="button" class="btn btn-danger" onclick="JSONrequest('brickpistop','POST',donothing)">Stop</button>
 			</div>
 			<div class="col-4">
 				<button type="button" class="btn btn-dark" onclick="hideelement('dashboard'); JSONrequest('brickpishutdown','POST', brickpishutdownhandler);">Shutdown Robot</button>
 			</div>
 		</div>
+		<div class="row text-center fitrow">
+			<div class="col-4">
+				<button type="button" class="btn btn-success" onclick="JSONrequest('brickpileft','POST',rotateturtle);">Turn Left</button>
+			</div>
+			<div class="col-4">
+				<button type="button" class="btn btn-success" onclick="JSONrequest('brickpiright','POST',rotateturtle);"">Turn Right</button>
+			</div>
+			<div class="col-4">
+				<button type="button" class="btn btn-primary" onclick="JSONrequest('brickpiautomate','POST');">Automate Search</button>
+			</div>
+		</div>
+		<div class="row text-center fitrow">
+			<div class="col-4">
+				<button type="button" class="btn btn-warning" onclick="JSONrequest('brickpishoot','POST');">Shoot</button>
+			</div>
+		</div>
+		<br/>
 	</div>
+	
 </div>
 {% endblock %}
 {% block scripts %}
@@ -29,5 +51,7 @@
 	{% else %}
 		<script> robotenabled = false;</script>
 	{% endif %}
+	<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.1.0/distrib/jsxgraphcore.js"></script>
+	<script src="static/mapping.js"></script>
 	<script src="static/brickpirequesthandlers.js"></script>
 {% endblock %}
