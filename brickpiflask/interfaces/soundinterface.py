@@ -10,12 +10,6 @@ class SoundInterface():
         self.engine.set('pitch', '60')
         #load music player
         pygame.mixer.init()
-        #self.load_mp3("stayingalive.mp3")
-        return
-    
-    def load_mp3(self, song):
-        pygame.mixer.music.load(song)
-        #saves the song as something recongniseable
         return
     
     def get_all_voices(self):
@@ -34,9 +28,14 @@ class SoundInterface():
         self.engine.say(message)
         self.engine.talkback()
         return
+
+    def load_mp3(self, song):
+        pygame.mixer.music.load(song)
+        #saves the song as something recongniseable
+        return
     
-    def play_music(self):
-        pygame.mixer.music.play()
+    def play_music(self, times = -1):
+        pygame.mixer.music.play(times)
         return
     
     def pause_music(self):
@@ -45,17 +44,31 @@ class SoundInterface():
     
     def unpause_music(self):
         pygame.mixer.music.unpause()
-        
+        return
+
+    def stop_music(self):
+        pygame.mixer.music.stop()
+        return
+
+    def set_volume(self, v=0.8):
+        pygame.mixer.music.set_volume(v)
+        return
+
 
 #---------------------------------------------
 #only execute if this is the main file, good for testing code.
         
 if __name__ == "__main__":
-    sound = SoundInterface()
+    SOUND = SoundInterface()
+    SOUND.load_mp3("inspectorgadget.mp3")
     #letting the user know help is on the way
-    sound.say("I am here to save you fool. Why you so dumb to get stuck in a fire in the first place")
+    SOUND.say("I am on a mission to mine martian ice.")
     print("finished")
-    #sound.play_music()
+    SOUND.play_music(1)
+    SOUND.set_volume(0.6)
+    reponse = input("Press Enter to stop")
+    SOUND.stop_music()
+
     
     
     
