@@ -4,4 +4,5 @@ BRICKPI = None
 GROVEPI = None
 LOGGER = None
 SOUND = None
+CAMERA = None
 
