@@ -20,7 +20,7 @@ class SensorStatus():
 class BrickPiInterface():
 
     #Initialise timelimit and logging
-    def __init__(self, timelimit=20, logger=logging.getLogger()):
+    def __init__(self, timelimit=20, logger=logging.getLogger(__name__)):
         self.logger = logger
         self.CurrentCommand = "loading"
         self.Configured = False #is the robot yet Configured?
@@ -277,7 +277,7 @@ class BrickPiInterface():
         ifMutexAcquire(USEMUTEX)
         try:
             distance = bp.get_sensor(self.ultra)
-            time.sleep(0.2)
+            time.sleep(0.3)
             self.config['ultra'] = SensorStatus.ENABLED
         except Exception as error:
             self.log("ULTRASONIC: " + str(error))
@@ -524,7 +524,7 @@ class BrickPiInterface():
 
     #log out whatever !!!!!THIS IS NOT WORKING UNLESS FLASK LOG USED, DONT KNOW WHY!!!!!
     def log(self, message):
-        self.logger.info(message)
+        self.logger.debug(message)
         return
 
     #stop all motors and set current command to stop
@@ -576,15 +576,18 @@ class BrickPiInterface():
 #--------------------------------------------------------------------
 # Only execute if this is the main file, good for testing code
 if __name__ == '__main__':
-    robot = BrickPiInterface(timelimit=20)  #20 second timelimit before
-    bp = robot.BP #alias to shorten code
+    logging.basicConfig()
+    logging.root.setLevel(logging.DEBUG)
+    BRICKPI = BrickPiInterface(timelimit=20)  #20 second timelimit before
+    bp = BRICKPI.BP #alias to shorten code
     bp.reset_all() 
     time.sleep(2)
+    BRICKPI.log("HERE I AM")
     motorports = {'rightmotor':bp.PORT_B, 'leftmotor':bp.PORT_C, 'mediummotor':bp.PORT_D }
     sensorports = { 'thermal':None, 'colour':bp.PORT_1,'ultra':bp.PORT_4,'imu':1 }
-    robot.configure_sensors(motorports, sensorports) #This takes 4 seconds
-    robot.log("HERE I AM")
-    input("Press any key to test: ")
-    #print(robot.rotate_power_degrees_IMU(30, 90, 0))
-    #print(robot.get_all_sensors())
-    robot.safe_exit()
+    BRICKPI.configure_sensors(motorports, sensorports) #This takes 4 seconds
+    print(BRICKPI.get_all_sensors())
+    response = input("Press any key to test: q to exit ")
+    if response != 'q':
+        BRICKPI.rotate_power_degrees_IMU(30, 90, 0)
+    BRICKPI.safe_exit()

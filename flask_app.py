@@ -6,7 +6,6 @@ from datetime import datetime
 import globalvars
 import helpers
 
-
 #---CONFIGURE APP---------------------------------------------------#
 sys.tracebacklimit = 1 #Level of python traceback - reduces error text in python anywhere
 app = Flask(__name__) #Creates the Flask Server Object
@@ -14,7 +13,7 @@ app.config.from_object('config.Config')
 globalvars.LOGGER = app.logger; LOGGER = globalvars.LOGGER
 globalvars.DATABASE = Database('test.sqlite', app.logger); DATABASE = globalvars.DATABASE
 
-#---REGISTER BLUEPRINTS FOR ADDITIONAL FLASK VIEWS AND OTHER CONDITIONAL IMPORTS -------------#
+#---REGISTER BLUEPRINTS FOR ADDITIONAL FLASK VIEWS AND OTHER CONDITIONAL IMPORTS -#
 if app.config['JSON']:
     from jsontest.jsonblueprint import jsonblueprint
     app.register_blueprint(jsonblueprint, url_prefix='/jsontest')
@@ -37,8 +36,7 @@ if app.config['CROSSDOMAIN']:
     except ImportError:
         globalvars.LOGGER.error("You need to install Flask-CORS")
 
-#-------------------------------------------------------------------#
-# HTTP REQUESTS / REQUEST HANDLERS
+#----HTTP REQUESTS / REQUEST HANDLERS------#
 #Login page
 @app.route('/', methods=['GET','POST'])
 def login():
@@ -57,7 +55,7 @@ def login():
             session['permission'] = row['permission']
             return redirect('./home')
         else: 
-            #LOGGER.error("Login failed for " + str(email) + " from " + str(helpers.get_user_ip()))
+            #LOGGER.debug("Login failed for " + str(email) + " from " + str(helpers.get_user_ip()))
             flash("Sorry no user found, password or email incorrect") #flash will send messages to the screen
     return render_template('login.html')
 
@@ -146,5 +144,7 @@ def shutdown():
 
 #main method called web server application
 if __name__ == '__main__':
-    #app.run() #PYTHON ANYTWHERE!!! will decide the port
+    logging.basicConfig()
+    logging.root.setLevel(logging.DEBUG)
+    #app.run() #if hosted on Python Anywhere, it will decide the port
     app.run(host='0.0.0.0', port=5000, threaded=True) #runs a local server on port 5000

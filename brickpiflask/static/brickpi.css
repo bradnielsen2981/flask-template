@@ -3,6 +3,8 @@
 */
 .jxgbox { width:300px; height:300px; }
 
+#dashboard { visibility:hidden; }
+
 #map
 {
     min-width:300px;
@@ -33,4 +35,5 @@
     left: 0;
 }
 
+#loadingnumber { font-size:24px; color:blue; }
 
