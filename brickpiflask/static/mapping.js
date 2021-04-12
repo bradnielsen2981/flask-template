@@ -6,17 +6,13 @@ turtle.setPenSize(3);
 
 function rotateturtle(results)
 {
-    console.log(results);
-    turtle.rt(results.rotated);
-    //set the heading degrees
-    //turtle.lookTo()
+
 }
 
 //function recieves the JSON back from AJAZ request
 function forwardturtle(results)
 {
-    console.log(results);
-    turtle.forward(results.elapsed*20);
+
 }
 
 
