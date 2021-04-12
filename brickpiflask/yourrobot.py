@@ -22,38 +22,8 @@ class Robot(BrickPiInterface):
     #Create a function to move forward until object detected
     #Need to return some data which can be used
     def move_power_time_until_detect_object(self, power, t, distance=20, deviation=0):
-        bp = self.BP #alias
-        
         self.interrupt_previous_command()
         self.CurrentCommand = "move_power_time_until_detect_object"
-
-        #dictionary
-        data = {'action':self.CurrentCommand,'elapsed':0,'distancedetected':0,'colourdetected':None} #return data
-
-        #check to see if vital sensors working
-        if self.config['ultra'] >= SensorStatus.DISABLED:
-            return data
-
-        #create timelimit
-        starttime = time.time()
-        timelimit = starttime + t
-
-        #start motors
-        bp.set_motor_power(self.rightmotor, power)
-        bp.set_motor_power(self.leftmotor, power + deviation)
-
-        while ((time.time() < timelimit) and (self.CurrentCommand == "move_power_time_until_detect_object")):
-
-            #detect an object using ultrasonic
-            distancetoobject = self.get_ultra_sensor()
-            print(distancetoobject)
-            if ((distancetoobject < distance) and (distancetoobject != 0)): #check that its not an invalid reading
-                data['distancedetected'] = distancetoobject
-                break
-            
-            #detect a colour using colour sensor
-            colour = self.get_colour_sensor()
-            data['colourdetected'] = colour
 
         self.stop_all()
         data['elapsed'] = time.time() - starttime
@@ -63,67 +33,19 @@ class Robot(BrickPiInterface):
     #Create a function to move forward until object detected
     #Need to return some data which can be used
     def rotate_power_degrees_IMU_until_detect_object(self, power, degrees, distance, marginoferror=3):
-        bp = self.BP #alias
-
         #interrupt the current command
         self.interrupt_previous_command()
         self.CurrentCommand = "rotate_power_degrees_IMU_until_detect_object"
-        data = {'action':self.CurrentCommand,'rotated':0,'distancedetected':0,'elapsed':0} #return data
-
-        #check to see if sensors working
-        if (self.config['ultra'] >= SensorStatus.DISABLED) or (self.config['imu'] >= SensorStatus.DISABLED):
-            return data
         
-        symbol = '<'; limit = 0
-        if degrees == 0:
-            return
-        elif degrees < 0:
-            symbol = '>='; limit = degrees+marginoferror
-        else:
-            symbol = '<='; limit = degrees-marginoferror; power = -power
-        totaldegreesrotated = 0; lastrun = 0
-        
-        starttime = time.time(); timelimit = starttime + self.timelimit
-
-        #set motors with one motor in reverse
-        bp.set_motor_power(self.rightmotor, power)
-        bp.set_motor_power(self.leftmotor, -power)
-
-        while eval("totaldegreesrotated" + str(symbol) + "limit") and (self.CurrentCommand == "rotate_power_degrees_IMU_until_detect_object") and (time.time() < timelimit):
-
-            lastrun = time.time()
-            gyrospeed = self.get_gyro_sensor_IMU()[2] #rotate around z-axis
-
-            #detect object
-            distancetoobject = self.get_ultra_sensor()
-            print(distancetoobject)
-            if ((distancetoobject < distance) and (distancetoobject != 0)):
-                data['distancedetected'] = distancetoobject
-                break
-
-            totaldegreesrotated += (time.time() - lastrun)*gyrospeed
         self.stop_all()
-        data['rotated'] = totaldegreesrotated
-        data['elapsed'] = time.time() - starttime
-        data['heading'] = self.get_compass_IMU()
         return data
 
     #repeatedly search in a circle, move forward when object is detected...
     def automated_search_and_retrieval(self):
-        if SOUND:
-            SOUND.say("AUTOMATED SEARCH ENABLED.")
+        self.interrupt_previous_command()
         self.CurrentRoutine = "automated_search_and_retrieval" #create a routine
 
-        self.data = self.rotate_power_degrees_IMU_until_detect_object(20, 360, 40)
-        self.data['heading'] = self.get_compass_IMU() #uses compass values IMUS
-        self.data['sequence'] = 1
-        #Save to Database
-
-        self.data = self.move_power_time_until_detect_object(30, 4, 15)
-        self.data['heading'] = self.get_compass_IMU() #uses compass values IMUS
-        self.data['sequence'] = 2
-        #Save to Database
-
+        self.stop_all()
         return
 
         
