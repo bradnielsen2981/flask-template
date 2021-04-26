@@ -76,29 +76,21 @@ def brickpishutdown():
 
 @brickpiblueprint.route('/brickpiautomate', methods=['GET','POST'])
 def brickpiautomate():
-    if BRICKPI:
-        BRICKPI.automated_search_and_retrieval()
     return jsonify({'message':'Automated searching'})
 
 @brickpiblueprint.route('/brickpistart', methods=['GET','POST'])
 def brickpistart():
     data = None
-    if BRICKPI:
-        data = BRICKPI.move_power_time_until_detect_object(30,4,20,0)
     return jsonify(data)  #python dictionary -> converted JSON
 
 @brickpiblueprint.route('/brickpileft', methods=['GET','POST'])
 def brickpileft():
     data = None
-    if BRICKPI:
-        data = BRICKPI.rotate_power_degrees_IMU_until_detect_object(-30,360,30)
     return jsonify(data)  
 
 @brickpiblueprint.route('/brickpiright', methods=['GET','POST'])
 def brickpiright():
     data = None
-    if BRICKPI:
-        data = BRICKPI.rotate_power_degrees_IMU_until_detect_object(30,360,30)
     return jsonify(data)       
 
 @brickpiblueprint.route('/brickpistop', methods=['GET','POST'])
@@ -110,11 +102,7 @@ def brickpistop():
 
 @brickpiblueprint.route('/brickpishoot', methods=['GET','POST'])
 def brickpishoot():
-    if BRICKPI:
-        BRICKPI.spin_medium_motor(-2000)
     return jsonify({'message':'Shooting'}) 
-
-
 
 # CAMERA CODE (Not Sure how it works)
 def gen(camera):
