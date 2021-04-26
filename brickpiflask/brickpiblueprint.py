@@ -1,7 +1,6 @@
 from flask import Flask, Blueprint, render_template, session, request, redirect, url_for, flash, jsonify, Response
 from brickpiflask.yourrobot import *
 from brickpiflask.interfaces.camerainterface import *
-from brickpiflask.interfaces.soundinterface import * 
 import helpers
 from datetime import datetime
 import globalvars
