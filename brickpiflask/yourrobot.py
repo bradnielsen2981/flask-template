@@ -26,7 +26,6 @@ class Robot(BrickPiInterface):
         self.CurrentCommand = "move_power_time_until_detect_object"
 
         self.stop_all()
-        data['elapsed'] = time.time() - starttime
         return data
     
 
